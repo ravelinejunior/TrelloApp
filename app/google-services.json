@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "571464282328",
+    "project_id": "trelloapp-927d4",
+    "storage_bucket": "trelloapp-927d4.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:571464282328:android:19217701ed78ad26dda7ad",
+        "android_client_info": {
+          "package_name": "br.com.trelloapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "571464282328-j2meiu473p282ov1dth2fuq8m9u36ra1.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "br.com.trelloapp",
+            "certificate_hash": "9a1ff5082c5b30cc9a71d37afb5ebee48ece9dc0"
+          }
+        },
+        {
+          "client_id": "571464282328-rn7o0383q1nps4p1505dmuhc8vppasi2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBlQM6z-QlYajghv-YNJWu146jgWegtjHw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "571464282328-rn7o0383q1nps4p1505dmuhc8vppasi2.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
