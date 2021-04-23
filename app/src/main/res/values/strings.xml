@@ -8,6 +8,7 @@
     <string name="sign_up">SIGN UP</string>
 
     <string name="intro_app_name">OrganizeIt´s</string>
+    <string name="welcome_message">Welcome to OrganizeIt´s</string>
 
     <string name="sign_up_description_text">Enter your name, email id and password, to register with us.</string>
     <string name="name">Name</string>

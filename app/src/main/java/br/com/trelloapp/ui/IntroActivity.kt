@@ -22,9 +22,6 @@ class IntroActivity : BaseActivity(), View.OnClickListener {
 
         btn_sign_in_intro.setOnClickListener(this)
         btn_sign_up_intro.setOnClickListener(this)
-
-
-
     }
 
     override fun onClick(view: View?) {
