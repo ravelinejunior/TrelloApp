@@ -4,10 +4,12 @@ import android.os.Bundle
 import android.text.TextUtils
 import android.view.View
 import android.view.WindowManager
-import android.widget.Toast
 import br.com.trelloapp.R
+import br.com.trelloapp.firebase.FirestoreClass
+import br.com.trelloapp.model.UserModel
 import br.com.trelloapp.utils.Constants.isNetworkAvailable
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import kotlinx.android.synthetic.main.activity_sign_up.*
 
 class SignUpActivity : BaseActivity(), View.OnClickListener {
@@ -56,20 +58,24 @@ class SignUpActivity : BaseActivity(), View.OnClickListener {
                 firebaseInstance
                     .createUserWithEmailAndPassword(email, password)
                     .addOnCompleteListener { task ->
-                        hideProgressDialog()
                         if (task.isSuccessful) {
-                            Toast.makeText(
-                                this,
-                                "$name, Welcome to OrganizeIt´s",
-                                Toast.LENGTH_SHORT
-                            ).show()
 
-                            finish()
+                            val firebaseUser: FirebaseUser = task.result!!.user!!
+
+                            val user = UserModel(firebaseUser.uid, name, email)
+
+                            FirestoreClass().registerUser(this, user)
+
+                            hideProgressDialog()
+
+
                         } else {
                             showErrorSnackBar("Something went wrong during your signup! ${task.exception}")
+                            hideProgressDialog()
                         }
-                    }.addOnFailureListener {
-                        exception ->  
+                    }.addOnFailureListener { exception ->
+                        showErrorSnackBar(exception.message.toString())
+                        hideProgressDialog()
                     }
             }
         } else showErrorSnackBar("No Internet Connection")
@@ -104,5 +110,11 @@ class SignUpActivity : BaseActivity(), View.OnClickListener {
             }
         }
 
+    }
+
+    fun userRegisteredSuccess() {
+        firebaseInstance.signOut()
+        showWelcomeSnabar("Registered with success!")
+        finish()
     }
 }

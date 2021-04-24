@@ -6,6 +6,9 @@ import android.text.TextUtils
 import android.view.View
 import android.view.WindowManager
 import br.com.trelloapp.R
+import br.com.trelloapp.firebase.FirestoreClass
+import br.com.trelloapp.model.UserModel
+import br.com.trelloapp.utils.Constants.USER_KEY_MODEL
 import br.com.trelloapp.utils.Constants.isNetworkAvailable
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.activity_sign_in.*
@@ -50,13 +53,7 @@ class SignInActivity : BaseActivity(), View.OnClickListener {
                 firebaseAuth.signInWithEmailAndPassword(email, password)
                     .addOnCompleteListener { task ->
                         if (task.isSuccessful) {
-                            hideProgressDialog()
-                            val user = firebaseAuth.currentUser
-                            showWelcomeSnabar("Welcome ${user.email}")
-
-                            firebaseAuth.signOut()
-                            startActivity(Intent(this, MainActivity::class.java))
-
+                            FirestoreClass().signInUser(this)
                         } else {
                             hideProgressDialog()
                             showErrorSnackBar("Something went wrong!")
@@ -92,4 +89,15 @@ class SignInActivity : BaseActivity(), View.OnClickListener {
 
         }
     }
+
+    fun userSignInSuccess(user: UserModel?) {
+        hideProgressDialog()
+        val intent = Intent(this, MainActivity::class.java)
+        intent.putExtra(USER_KEY_MODEL, user)
+        startActivity(intent)
+        finish()
+
+    }
+
+
 }

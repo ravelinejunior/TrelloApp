@@ -8,6 +8,7 @@ import android.os.Handler
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import br.com.trelloapp.R
+import br.com.trelloapp.firebase.FirestoreClass
 import kotlinx.android.synthetic.main.activity_splash.*
 
 class SplashActivity : AppCompatActivity() {
@@ -22,8 +23,15 @@ class SplashActivity : AppCompatActivity() {
         )
 
         Handler().postDelayed({
-            startActivity(Intent(this, IntroActivity::class.java))
+
+            val currentID = FirestoreClass().getCurrentUserId()
+            if (currentID.isNotEmpty()) {
+                startActivity(Intent(this, MainActivity::class.java))
+            } else {
+                startActivity(Intent(this, IntroActivity::class.java))
+            }
             finish()
+
         }, 2000)
 
 

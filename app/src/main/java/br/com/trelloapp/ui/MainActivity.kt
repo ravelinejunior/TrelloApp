@@ -1,17 +1,26 @@
 package br.com.trelloapp.ui
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.WindowManager
 import br.com.trelloapp.R
+import br.com.trelloapp.model.UserModel
+import br.com.trelloapp.utils.Constants.USER_KEY_MODEL
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.activity_sign_in.*
 
 class MainActivity : BaseActivity() {
+
+    private var user: UserModel? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setupActionBar()
+
+        if (intent.extras != null) {
+            user = intent.getParcelableExtra(USER_KEY_MODEL)
+            if (user != null)
+                showWelcomeSnabar("Hello ${user?.name}")
+        }
     }
 
     private fun setupActionBar() {
