@@ -61,7 +61,7 @@ open class BaseActivity : AppCompatActivity() {
         val snackbar =
             Snackbar.make(findViewById(android.R.id.content), message, Snackbar.LENGTH_LONG)
         val snackbarView = snackbar.view
-        snackbarView.setBackgroundColor(ContextCompat.getColor(this, android.R.color.holo_green_dark))
+        snackbarView.setBackgroundColor(ContextCompat.getColor(this, R.color.colorAccent))
         snackbar.show()
     }
 }
