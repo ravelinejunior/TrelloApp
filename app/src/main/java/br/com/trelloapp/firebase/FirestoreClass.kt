@@ -1,7 +1,10 @@
 package br.com.trelloapp.firebase
 
+import android.app.Activity
 import android.util.Log
 import br.com.trelloapp.model.UserModel
+import br.com.trelloapp.ui.MainActivity
+import br.com.trelloapp.ui.MyProfileActivity
 import br.com.trelloapp.ui.SignInActivity
 import br.com.trelloapp.ui.SignUpActivity
 import br.com.trelloapp.utils.Constants.USER_COLLECTION_NAME
@@ -25,7 +28,7 @@ class FirestoreClass {
             }
     }
 
-    fun signInUser(activity: SignInActivity) {
+    fun loadUserData(activity: Activity) {
         mFirestore.collection(USER_COLLECTION_NAME)
             .document(getCurrentUserId())
             .get()
@@ -33,8 +36,32 @@ class FirestoreClass {
 
                 val loggedInUser = document.toObject(UserModel::class.java)
 
-                activity.userSignInSuccess(loggedInUser)
+                when (activity) {
+                    is SignInActivity -> {
+                        activity.userSignInSuccess(loggedInUser)
+                    }
+                    is MainActivity -> {
+                        activity.updateNavigationUserDetails(loggedInUser)
+                    }
+                    is MyProfileActivity -> {
+                        activity.updateNavigationUserDetails(loggedInUser)
+                    }
+
+                }
+
+
             }.addOnFailureListener { it ->
+
+                when (activity) {
+                    is SignInActivity -> {
+                        activity.hideProgressDialog()
+                    }
+                    is MainActivity -> {
+                        activity.hideProgressDialog()
+                    }
+
+                }
+
                 Log.e(activity.javaClass.simpleName, "Error saving user:${it.printStackTrace()}")
             }
     }

@@ -13,6 +13,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.TrelloApp.NoActionBar">
+        <activity android:name=".ui.MyProfileActivity"
+            android:theme="@style/Theme.TrelloApp.NoActionBar"
+            android:screenOrientation="portrait"
+            android:parentActivityName=".ui.MainActivity"
+            />
         <activity
             android:name=".ui.MainActivity"
             android:parentActivityName=".ui.IntroActivity"

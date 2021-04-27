@@ -53,7 +53,7 @@ class SignInActivity : BaseActivity(), View.OnClickListener {
                 firebaseAuth.signInWithEmailAndPassword(email, password)
                     .addOnCompleteListener { task ->
                         if (task.isSuccessful) {
-                            FirestoreClass().signInUser(this)
+                            FirestoreClass().loadUserData(this)
                         } else {
                             hideProgressDialog()
                             showErrorSnackBar("Something went wrong!")

@@ -1,17 +1,20 @@
 package br.com.trelloapp.ui
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.MenuItem
-import android.widget.Toast
 import androidx.core.view.GravityCompat
 import br.com.trelloapp.R
+import br.com.trelloapp.firebase.FirestoreClass
 import br.com.trelloapp.model.UserModel
 import br.com.trelloapp.utils.Constants.USER_KEY_MODEL
+import com.bumptech.glide.Glide
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
+import kotlinx.android.synthetic.main.nav_header_main.*
 
 class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedListener {
 
@@ -28,6 +31,8 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             if (user != null)
                 showWelcomeSnabar("Hello ${user?.name}")
         }
+
+        FirestoreClass().loadUserData(this)
 
         nav_view_id.setNavigationItemSelectedListener(this)
     }
@@ -69,7 +74,9 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.nav_my_profile -> {
-                Toast.makeText(this, "User", Toast.LENGTH_SHORT).show()
+                val intent = Intent(this, MyProfileActivity::class.java)
+                intent.putExtra(USER_KEY_MODEL, user)
+                startActivity(intent)
             }
 
             R.id.nav_sign_out -> {
@@ -87,5 +94,16 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
         startActivity(intent)
         finish()
+    }
+
+    fun updateNavigationUserDetails(loggedInUser: UserModel?) {
+
+        Glide.with(this).load(Uri.parse(loggedInUser?.image)).centerCrop()
+            .placeholder(R.drawable.ic_user_place_holder).into(iv_nav_user_image)
+
+        tv_nav_username.text = loggedInUser?.name
+
+        user = loggedInUser
+
     }
 }
