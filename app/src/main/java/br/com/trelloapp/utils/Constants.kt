@@ -31,4 +31,5 @@ object Constants {
     //Firebase variables
     const val USER_COLLECTION_NAME = "Users"
     const val USER_KEY_MODEL = "USER_KEY_MODEL"
+    const val IMAGE_REFERENCE_DOCUMENT = "User_Image"
 }

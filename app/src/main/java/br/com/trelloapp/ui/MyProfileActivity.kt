@@ -7,24 +7,32 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Log
 import android.view.View
+import android.webkit.MimeTypeMap
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import br.com.trelloapp.R
 import br.com.trelloapp.firebase.FirestoreClass
 import br.com.trelloapp.model.UserModel
+import br.com.trelloapp.utils.Constants.IMAGE_REFERENCE_DOCUMENT
 import br.com.trelloapp.utils.Constants.USER_KEY_MODEL
 import com.bumptech.glide.Glide
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageReference
 import kotlinx.android.synthetic.main.activity_my_profile.*
 
 
-class MyProfileActivity : AppCompatActivity(), View.OnClickListener {
+class MyProfileActivity : BaseActivity(), View.OnClickListener {
     private var user: UserModel? = null
+
     private val firebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
+    private var storageRef: StorageReference = FirebaseStorage.getInstance().reference.child("Profile_Images")
+
     private var mSelectedImageFileUri: Uri? = null
+    private var mProfileImageUrl: String = ""
 
     companion object {
         private const val READ_STORAGE_PERMISSION_CODE = 12510
@@ -45,8 +53,7 @@ class MyProfileActivity : AppCompatActivity(), View.OnClickListener {
         setupActionBar()
 
         iv_user_image_myProfile.setOnClickListener(this)
-
-
+        btn_update_myProfile.setOnClickListener(this)
     }
 
     private fun setupActionBar() {
@@ -97,7 +104,13 @@ class MyProfileActivity : AppCompatActivity(), View.OnClickListener {
                         READ_STORAGE_PERMISSION_CODE
                     )
                 }
+            }
 
+            R.id.btn_update_myProfile -> {
+
+                if (mSelectedImageFileUri != null) {
+                    uploadUserImage()
+                }
 
             }
 
@@ -113,7 +126,7 @@ class MyProfileActivity : AppCompatActivity(), View.OnClickListener {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == READ_STORAGE_PERMISSION_CODE) {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                //TODO show image dialog
+
                 showImageChooser()
             } else {
                 Toast.makeText(this, "Oops, you denied the permissions!", Toast.LENGTH_SHORT).show()
@@ -145,6 +158,44 @@ class MyProfileActivity : AppCompatActivity(), View.OnClickListener {
                 }
             }
         }
+    }
+
+    private fun uploadUserImage() {
+        showProgressDialog(resources.getString(R.string.please_wait))
+
+        if (mSelectedImageFileUri != null) {
+            //storage file
+            storageRef = storageRef.child(user!!.id).child(
+                IMAGE_REFERENCE_DOCUMENT + System.currentTimeMillis() + "." +
+                        getFileExtension(mSelectedImageFileUri)
+            )
+
+            storageRef.putFile(mSelectedImageFileUri!!).addOnSuccessListener { taskSnapshot ->
+                Log.i(
+                    "TAGTaskSnapshot",
+                    "Image Url ${taskSnapshot.metadata!!.reference!!.downloadUrl}"
+                )
+
+                taskSnapshot.metadata!!.reference!!.downloadUrl.addOnSuccessListener { uri ->
+                    mProfileImageUrl = uri.toString()
+
+                    //update user data
+
+                    hideProgressDialog()
+
+                }.addOnFailureListener { exception ->
+                    Toast.makeText(this, exception.message, Toast.LENGTH_SHORT).show()
+                    hideProgressDialog()
+                }
+            }
+
+        } else {
+            hideProgressDialog()
+        }
+    }
+
+    private fun getFileExtension(uri: Uri?): String? {
+        return MimeTypeMap.getSingleton().getExtensionFromMimeType(contentResolver.getType(uri!!))
     }
 
 }
