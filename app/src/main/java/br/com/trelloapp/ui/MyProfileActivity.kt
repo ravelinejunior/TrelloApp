@@ -17,7 +17,11 @@ import br.com.trelloapp.R
 import br.com.trelloapp.firebase.FirestoreClass
 import br.com.trelloapp.model.UserModel
 import br.com.trelloapp.utils.Constants.IMAGE_REFERENCE_DOCUMENT
+import br.com.trelloapp.utils.Constants.IMAGE_USER_KEY
+import br.com.trelloapp.utils.Constants.MOBILE_USER_KEY
+import br.com.trelloapp.utils.Constants.NAME_USER_KEY
 import br.com.trelloapp.utils.Constants.USER_KEY_MODEL
+import br.com.trelloapp.utils.Constants.isNetworkAvailable
 import com.bumptech.glide.Glide
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.storage.FirebaseStorage
@@ -29,7 +33,8 @@ class MyProfileActivity : BaseActivity(), View.OnClickListener {
     private var user: UserModel? = null
 
     private val firebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
-    private var storageRef: StorageReference = FirebaseStorage.getInstance().reference.child("Profile_Images")
+    private var storageRef: StorageReference =
+        FirebaseStorage.getInstance().reference.child("Profile_Images")
 
     private var mSelectedImageFileUri: Uri? = null
     private var mProfileImageUrl: String = ""
@@ -49,6 +54,7 @@ class MyProfileActivity : BaseActivity(), View.OnClickListener {
         } else {
             FirestoreClass().loadUserData(this)
         }
+
 
         setupActionBar()
 
@@ -108,14 +114,56 @@ class MyProfileActivity : BaseActivity(), View.OnClickListener {
 
             R.id.btn_update_myProfile -> {
 
-                if (mSelectedImageFileUri != null) {
-                    uploadUserImage()
+                if (isNetworkAvailable(this)) {
+                    if (mSelectedImageFileUri != null) {
+                        uploadUserImage()
+                    } else {
+                        showProgressDialog(resources.getString(R.string.please_wait))
+                        updateUserProfileData(
+                            et_name_myProfile.text.toString(),
+                            et_mobile_myProfile.text.toString().toLong()
+                        )
+                    }
+                } else {
+                    showErrorSnackBar("No Internet Connection!")
                 }
 
             }
 
         }
         //TODO "ALTERAR CODIGO UTILIZANDO LIB DEXTER"
+    }
+
+    private fun updateUserProfileData(name: String, phone: Long) {
+        if (isNetworkAvailable(this)) {
+
+            val userHashMap: HashMap<String, Any> = HashMap()
+            var anyChanges = false
+
+            if (mProfileImageUrl.isNotEmpty() && mProfileImageUrl != user?.image) {
+                userHashMap[IMAGE_USER_KEY] = mProfileImageUrl
+                anyChanges = true
+            }
+            if (name.isNotEmpty() && name != user?.name) {
+                userHashMap[NAME_USER_KEY] = name
+                anyChanges = true
+            }
+            if (phone != 0L && phone != user?.mobile) {
+                userHashMap[MOBILE_USER_KEY] = phone
+                anyChanges = true
+            }
+
+            if (anyChanges) {
+                FirestoreClass().updateUserProfileData(this, userHashMap)
+                setResult(Activity.RESULT_OK)
+
+            } else {
+                showErrorSnackBar("None changes has been detected!")
+                hideProgressDialog()
+            }
+
+        }
+
     }
 
     override fun onRequestPermissionsResult(
@@ -166,7 +214,7 @@ class MyProfileActivity : BaseActivity(), View.OnClickListener {
         if (mSelectedImageFileUri != null) {
             //storage file
             storageRef = storageRef.child(user!!.id).child(
-                IMAGE_REFERENCE_DOCUMENT + System.currentTimeMillis() + "." +
+                IMAGE_REFERENCE_DOCUMENT  + "." +
                         getFileExtension(mSelectedImageFileUri)
             )
 
@@ -178,10 +226,14 @@ class MyProfileActivity : BaseActivity(), View.OnClickListener {
 
                 taskSnapshot.metadata!!.reference!!.downloadUrl.addOnSuccessListener { uri ->
                     mProfileImageUrl = uri.toString()
-
                     //update user data
+                    updateUserProfileData(
+                        et_name_myProfile.text.toString(),
+                        et_mobile_myProfile.text.toString().toLong()
+                    )
 
                     hideProgressDialog()
+
 
                 }.addOnFailureListener { exception ->
                     Toast.makeText(this, exception.message, Toast.LENGTH_SHORT).show()

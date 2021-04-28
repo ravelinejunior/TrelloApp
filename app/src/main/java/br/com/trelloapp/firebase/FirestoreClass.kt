@@ -1,7 +1,9 @@
 package br.com.trelloapp.firebase
 
 import android.app.Activity
+import android.content.Intent
 import android.util.Log
+import android.widget.Toast
 import br.com.trelloapp.model.UserModel
 import br.com.trelloapp.ui.MainActivity
 import br.com.trelloapp.ui.MyProfileActivity
@@ -59,11 +61,30 @@ class FirestoreClass {
                     is MainActivity -> {
                         activity.hideProgressDialog()
                     }
+                    is MyProfileActivity -> {
+                        activity.hideProgressDialog()
+                    }
 
                 }
 
                 Log.e(activity.javaClass.simpleName, "Error saving user:${it.printStackTrace()}")
             }
+    }
+
+    fun updateUserProfileData(activity: MyProfileActivity, userHashMap: HashMap<String, Any>) {
+        mFirestore.collection(USER_COLLECTION_NAME)
+            .document(getCurrentUserId())
+            .update(userHashMap).addOnSuccessListener {
+                Log.i("TAGTaskSnapshot", "updateUserProfileData: Success updating user")
+                Toast.makeText(activity, "Updated with success!", Toast.LENGTH_SHORT).show()
+                activity.hideProgressDialog()
+                activity.finish()
+                //activity.startActivity(Intent(activity,MainActivity::class.java))
+            }.addOnFailureListener {
+                e ->
+                activity.hideProgressDialog()
+            }
+
     }
 
     fun getCurrentUserId(): String {

@@ -1,8 +1,10 @@
 package br.com.trelloapp.ui
 
+import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.MenuItem
 import androidx.core.view.GravityCompat
 import br.com.trelloapp.R
@@ -17,6 +19,10 @@ import kotlinx.android.synthetic.main.app_bar_main.*
 import kotlinx.android.synthetic.main.nav_header_main.*
 
 class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedListener {
+
+    companion object{
+        const val PROFILE_KEY:Int = 145
+    }
 
     private var user: UserModel? = null
     private lateinit var firebaseAuth: FirebaseAuth
@@ -76,7 +82,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             R.id.nav_my_profile -> {
                 val intent = Intent(this, MyProfileActivity::class.java)
                 intent.putExtra(USER_KEY_MODEL, user)
-                startActivity(intent)
+                startActivityForResult(intent, PROFILE_KEY)
             }
 
             R.id.nav_sign_out -> {
@@ -86,6 +92,15 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         drawer_layout.closeDrawer(GravityCompat.START)
 
         return true
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if(requestCode == PROFILE_KEY && resultCode == Activity.RESULT_OK){
+            FirestoreClass().loadUserData(this)
+        }else{
+            Log.e(MainActivity::class.java.simpleName, "onActivityResult: Error" )
+        }
     }
 
     private fun signOutUser() {
@@ -98,7 +113,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
     fun updateNavigationUserDetails(loggedInUser: UserModel?) {
 
-        Glide.with(this).load(Uri.parse(loggedInUser?.image)).centerCrop()
+        Glide.with(this).load(loggedInUser?.image).centerCrop()
             .placeholder(R.drawable.ic_user_place_holder).into(iv_nav_user_image)
 
         tv_nav_username.text = loggedInUser?.name

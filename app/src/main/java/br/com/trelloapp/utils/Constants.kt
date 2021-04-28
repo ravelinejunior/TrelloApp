@@ -28,8 +28,12 @@ object Constants {
 
     }
 
-    //Firebase variables
+    //User Firebase variables
     const val USER_COLLECTION_NAME = "Users"
     const val USER_KEY_MODEL = "USER_KEY_MODEL"
     const val IMAGE_REFERENCE_DOCUMENT = "User_Image"
+    const val IMAGE_USER_KEY = "image"
+    const val NAME_USER_KEY = "name"
+    const val MOBILE_USER_KEY = "mobile"
+
 }
