@@ -10,6 +10,8 @@ import br.com.trelloapp.R
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.dialog_progress.*
+import java.text.SimpleDateFormat
+import java.util.*
 
 open class BaseActivity : AppCompatActivity() {
 
@@ -63,5 +65,11 @@ open class BaseActivity : AppCompatActivity() {
         val snackbarView = snackbar.view
         snackbarView.setBackgroundColor(ContextCompat.getColor(this, R.color.colorAccent))
         snackbar.show()
+    }
+
+    fun getCurrentDate(): String {
+        val simpleDateFormat = SimpleDateFormat("dd/MM/yyyy G 'at' HH:mm:ss z", Locale.getDefault())
+        val currentDateAndTime: String = simpleDateFormat.format(Date())
+        return currentDateAndTime
     }
 }

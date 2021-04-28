@@ -20,8 +20,11 @@ import br.com.trelloapp.utils.Constants.IMAGE_REFERENCE_DOCUMENT
 import br.com.trelloapp.utils.Constants.IMAGE_USER_KEY
 import br.com.trelloapp.utils.Constants.MOBILE_USER_KEY
 import br.com.trelloapp.utils.Constants.NAME_USER_KEY
+import br.com.trelloapp.utils.Constants.PICK_IMAGE_REQUEST_CODE
 import br.com.trelloapp.utils.Constants.USER_KEY_MODEL
+import br.com.trelloapp.utils.Constants.getFileExtension
 import br.com.trelloapp.utils.Constants.isNetworkAvailable
+import br.com.trelloapp.utils.Constants.showImageChooser
 import com.bumptech.glide.Glide
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.storage.FirebaseStorage
@@ -32,7 +35,6 @@ import kotlinx.android.synthetic.main.activity_my_profile.*
 class MyProfileActivity : BaseActivity(), View.OnClickListener {
     private var user: UserModel? = null
 
-    private val firebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
     private var storageRef: StorageReference =
         FirebaseStorage.getInstance().reference.child("Profile_Images")
 
@@ -41,7 +43,6 @@ class MyProfileActivity : BaseActivity(), View.OnClickListener {
 
     companion object {
         private const val READ_STORAGE_PERMISSION_CODE = 12510
-        private const val PICK_IMAGE_REQUEST_CODE = 1615
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -100,7 +101,7 @@ class MyProfileActivity : BaseActivity(), View.OnClickListener {
                         Manifest.permission.READ_EXTERNAL_STORAGE
                     ) == PackageManager.PERMISSION_GRANTED
                 ) {
-                    showImageChooser()
+                    showImageChooser(this)
                 } else {
 
                     //required the permissions
@@ -175,17 +176,14 @@ class MyProfileActivity : BaseActivity(), View.OnClickListener {
         if (requestCode == READ_STORAGE_PERMISSION_CODE) {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 
-                showImageChooser()
+                showImageChooser(this)
             } else {
                 Toast.makeText(this, "Oops, you denied the permissions!", Toast.LENGTH_SHORT).show()
             }
         }
     }
 
-    private fun showImageChooser() {
-        var galleryIntent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-        startActivityForResult(galleryIntent, PICK_IMAGE_REQUEST_CODE)
-    }
+
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
@@ -215,7 +213,7 @@ class MyProfileActivity : BaseActivity(), View.OnClickListener {
             //storage file
             storageRef = storageRef.child(user!!.id).child(
                 IMAGE_REFERENCE_DOCUMENT  + "." +
-                        getFileExtension(mSelectedImageFileUri)
+                        getFileExtension(mSelectedImageFileUri,this)
             )
 
             storageRef.putFile(mSelectedImageFileUri!!).addOnSuccessListener { taskSnapshot ->
@@ -246,8 +244,6 @@ class MyProfileActivity : BaseActivity(), View.OnClickListener {
         }
     }
 
-    private fun getFileExtension(uri: Uri?): String? {
-        return MimeTypeMap.getSingleton().getExtensionFromMimeType(contentResolver.getType(uri!!))
-    }
+
 
 }

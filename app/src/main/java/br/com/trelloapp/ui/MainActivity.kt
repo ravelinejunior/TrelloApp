@@ -1,5 +1,6 @@
 package br.com.trelloapp.ui
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.net.Uri
@@ -10,6 +11,7 @@ import androidx.core.view.GravityCompat
 import br.com.trelloapp.R
 import br.com.trelloapp.firebase.FirestoreClass
 import br.com.trelloapp.model.UserModel
+import br.com.trelloapp.utils.Constants.NAME_USER_KEY
 import br.com.trelloapp.utils.Constants.USER_KEY_MODEL
 import com.bumptech.glide.Glide
 import com.google.android.material.navigation.NavigationView
@@ -27,6 +29,8 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     private var user: UserModel? = null
     private lateinit var firebaseAuth: FirebaseAuth
 
+    private lateinit var mUserName:String
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -41,8 +45,17 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         FirestoreClass().loadUserData(this)
 
         nav_view_id.setNavigationItemSelectedListener(this)
+
+        fab_create_board.setOnClickListener {
+            val intent = Intent(this,CreateBoardActivity::class.java)
+            intent.putExtra(USER_KEY_MODEL,user)
+            intent.putExtra(NAME_USER_KEY,mUserName)
+
+            startActivity(intent)
+        }
     }
 
+    @SuppressLint("UseCompatLoadingForDrawables")
     private fun setupActionBar() {
         firebaseAuth = FirebaseAuth.getInstance()
         setSupportActionBar(toolbar_main_activity)
@@ -113,10 +126,11 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
     fun updateNavigationUserDetails(loggedInUser: UserModel?) {
 
-        Glide.with(this).load(loggedInUser?.image).centerCrop()
+        mUserName = loggedInUser!!.name
+        Glide.with(this).load(loggedInUser.image).centerCrop()
             .placeholder(R.drawable.ic_user_place_holder).into(iv_nav_user_image)
 
-        tv_nav_username.text = loggedInUser?.name
+        tv_nav_username.text = loggedInUser.name
 
         user = loggedInUser
 

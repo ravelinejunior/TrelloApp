@@ -1,9 +1,15 @@
 package br.com.trelloapp.utils
 
+import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
+import android.net.Uri
 import android.os.Build
+import android.provider.MediaStore
+import android.webkit.MimeTypeMap
+import br.com.trelloapp.ui.MyProfileActivity
 
 object Constants {
     fun isNetworkAvailable(context: Context): Boolean {
@@ -28,6 +34,15 @@ object Constants {
 
     }
 
+     fun showImageChooser(activity: Activity) {
+        val galleryIntent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+        activity.startActivityForResult(galleryIntent, PICK_IMAGE_REQUEST_CODE)
+    }
+
+     fun getFileExtension(uri: Uri?,activity: Activity): String? {
+        return MimeTypeMap.getSingleton().getExtensionFromMimeType(activity.contentResolver.getType(uri!!))
+    }
+
     //User Firebase variables
     const val USER_COLLECTION_NAME = "Users"
     const val USER_KEY_MODEL = "USER_KEY_MODEL"
@@ -35,5 +50,11 @@ object Constants {
     const val IMAGE_USER_KEY = "image"
     const val NAME_USER_KEY = "name"
     const val MOBILE_USER_KEY = "mobile"
+
+    const val PICK_IMAGE_REQUEST_CODE = 1615
+
+    //Boards
+    const val BOARDS_KEY_NAME = "Boards"
+    const val BOARD_IMAGE_REF = "Board_Image"
 
 }

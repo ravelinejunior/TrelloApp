@@ -5,9 +5,8 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -16,11 +15,16 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.TrelloApp.NoActionBar">
-        <activity android:name=".ui.MyProfileActivity"
-            android:theme="@style/Theme.TrelloApp.NoActionBar"
-            android:screenOrientation="portrait"
+        <activity android:name=".ui.CreateBoardActivity"
             android:parentActivityName=".ui.MainActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.TrelloApp.NoActionBar"
             />
+        <activity
+            android:name=".ui.MyProfileActivity"
+            android:parentActivityName=".ui.MainActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.TrelloApp.NoActionBar" />
         <activity
             android:name=".ui.MainActivity"
             android:parentActivityName=".ui.IntroActivity"

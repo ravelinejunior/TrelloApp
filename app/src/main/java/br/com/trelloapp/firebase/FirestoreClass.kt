@@ -1,15 +1,14 @@
 package br.com.trelloapp.firebase
 
 import android.app.Activity
-import android.content.Intent
 import android.util.Log
 import android.widget.Toast
+import br.com.trelloapp.model.BoardModel
 import br.com.trelloapp.model.UserModel
-import br.com.trelloapp.ui.MainActivity
-import br.com.trelloapp.ui.MyProfileActivity
-import br.com.trelloapp.ui.SignInActivity
-import br.com.trelloapp.ui.SignUpActivity
+import br.com.trelloapp.ui.*
+import br.com.trelloapp.utils.Constants.BOARDS_KEY_NAME
 import br.com.trelloapp.utils.Constants.USER_COLLECTION_NAME
+import br.com.trelloapp.utils.Constants.isNetworkAvailable
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
@@ -71,6 +70,23 @@ class FirestoreClass {
             }
     }
 
+    fun createBoard(activity: CreateBoardActivity, boardModel: BoardModel) {
+        if (isNetworkAvailable(activity)) {
+            mFirestore.collection(BOARDS_KEY_NAME)
+                .document()
+                .set(boardModel, SetOptions.merge())
+                .addOnSuccessListener {
+                    Log.i("TAGTaskSnapshot", "Board: Success board create")
+                    Toast.makeText(activity, "Board created successfully!", Toast.LENGTH_SHORT)
+                        .show()
+                    activity.boardCreatedSuccessfully()
+                }.addOnFailureListener { exception ->
+                    Toast.makeText(activity, exception.message, Toast.LENGTH_SHORT).show()
+                    activity.hideProgressDialog()
+                }
+        }
+    }
+
     fun updateUserProfileData(activity: MyProfileActivity, userHashMap: HashMap<String, Any>) {
         mFirestore.collection(USER_COLLECTION_NAME)
             .document(getCurrentUserId())
@@ -80,8 +96,7 @@ class FirestoreClass {
                 activity.hideProgressDialog()
                 activity.finish()
                 //activity.startActivity(Intent(activity,MainActivity::class.java))
-            }.addOnFailureListener {
-                e ->
+            }.addOnFailureListener { e ->
                 activity.hideProgressDialog()
             }
 

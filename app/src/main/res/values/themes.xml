@@ -27,4 +27,15 @@
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.MaterialComponents.Dark.ActionBar" />
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.MaterialComponents.Light" />
+
+    <style name="SelectableItemTheme">
+        <item name="colorBackgroundFloating">@color/colorPrimary</item>
+        <item name="colorControlHighlight">@color/white</item>
+    </style>
+
+    <style name="SelectableItemBackground">
+        <item name="android:theme">@style/SelectableItemTheme</item>
+        <item name="android:background">?attr/selectableItemBackground</item>
+        <item name="rippleColor">@color/white</item>
+    </style>
 </resources>
