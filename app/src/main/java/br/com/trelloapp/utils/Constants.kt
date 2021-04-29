@@ -50,6 +50,7 @@ object Constants {
     const val IMAGE_USER_KEY = "image"
     const val NAME_USER_KEY = "name"
     const val MOBILE_USER_KEY = "mobile"
+    const val ASSIGNED_TO_KEY = "assignedTo"
 
     const val PICK_IMAGE_REQUEST_CODE = 1615
 

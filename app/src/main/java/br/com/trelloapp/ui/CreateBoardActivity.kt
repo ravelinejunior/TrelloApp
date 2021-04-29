@@ -44,7 +44,6 @@ class CreateBoardActivity : BaseActivity(), View.OnClickListener {
     private var storageReference: StorageReference =
         FirebaseStorage.getInstance().reference.child(BOARD_IMAGE_REF)
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_create_board)
@@ -62,8 +61,8 @@ class CreateBoardActivity : BaseActivity(), View.OnClickListener {
 
     }
 
-    private fun uploadBoardImage() {
 
+    private fun uploadBoardImage() {
 
         if (isNetworkAvailable(this)) {
 

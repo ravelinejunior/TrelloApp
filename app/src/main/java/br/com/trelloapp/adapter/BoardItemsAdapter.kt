@@ -1,0 +1,67 @@
+package br.com.trelloapp.adapter
+
+import android.content.Context
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.TextView
+import androidx.recyclerview.widget.RecyclerView
+import br.com.trelloapp.R
+import br.com.trelloapp.model.BoardModel
+import com.bumptech.glide.Glide
+import de.hdodenhof.circleimageview.CircleImageView
+
+open class BoardItemsAdapter(
+    private val context: Context,
+    private var listBoard: List<BoardModel>
+) :
+    RecyclerView.Adapter<BoardItemsAdapter.MyViewHoder>() {
+
+    private var onClickListener: OnClickListener? = null
+
+
+    open class MyViewHoder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val boardImage: CircleImageView = itemView.findViewById(R.id.iv_adapter_board_image)
+        val textName: TextView = itemView.findViewById(R.id.tv_board_adapter_name)
+        val textDate: TextView = itemView.findViewById(R.id.tv_board_adapter_created_at)
+        val textCreatedBy: TextView = itemView.findViewById(R.id.tv_board_adapter_created_by)
+    }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHoder {
+        val view: View =
+            LayoutInflater.from(parent.context).inflate(R.layout.item_board, parent, false)
+        return MyViewHoder(view)
+    }
+
+    override fun getItemCount(): Int = listBoard.size
+
+
+    override fun onBindViewHolder(holder: MyViewHoder, position: Int) {
+        val board = listBoard[position]
+
+        Glide.with(context).load(board.image).centerCrop()
+            .placeholder(R.drawable.ic_board_place_holder).into(holder.boardImage)
+
+        holder.textName.text = board.name
+        holder.textCreatedBy.text = "Created By ${board.createdBy}"
+        holder.textDate.text = "Created At ${board.createdAt}"
+
+        holder.itemView.setOnClickListener {
+            if (onClickListener != null) {
+                onClickListener?.onClick(position, board)
+            }
+        }
+    }
+
+    override fun getItemId(position: Int): Long {
+        return super.getItemId(position)
+    }
+
+    override fun getItemViewType(position: Int): Int {
+        return super.getItemViewType(position)
+    }
+
+    interface OnClickListener {
+        fun onClick(position: Int, model: BoardModel)
+    }
+}

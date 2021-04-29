@@ -3,13 +3,16 @@ package br.com.trelloapp.ui
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
+import android.view.View
 import androidx.core.view.GravityCompat
+import androidx.recyclerview.widget.LinearLayoutManager
 import br.com.trelloapp.R
+import br.com.trelloapp.adapter.BoardItemsAdapter
 import br.com.trelloapp.firebase.FirestoreClass
+import br.com.trelloapp.model.BoardModel
 import br.com.trelloapp.model.UserModel
 import br.com.trelloapp.utils.Constants.NAME_USER_KEY
 import br.com.trelloapp.utils.Constants.USER_KEY_MODEL
@@ -18,18 +21,23 @@ import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
+import kotlinx.android.synthetic.main.content_main.*
 import kotlinx.android.synthetic.main.nav_header_main.*
 
 class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedListener {
 
-    companion object{
-        const val PROFILE_KEY:Int = 145
+    companion object {
+        const val PROFILE_KEY: Int = 145
     }
+
 
     private var user: UserModel? = null
     private lateinit var firebaseAuth: FirebaseAuth
 
-    private lateinit var mUserName:String
+    private lateinit var mUserName: String
+
+    private lateinit var boardItemsAdapter: BoardItemsAdapter
+    private var listBoard = ArrayList<BoardModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,13 +55,14 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         nav_view_id.setNavigationItemSelectedListener(this)
 
         fab_create_board.setOnClickListener {
-            val intent = Intent(this,CreateBoardActivity::class.java)
-            intent.putExtra(USER_KEY_MODEL,user)
-            intent.putExtra(NAME_USER_KEY,mUserName)
+            val intent = Intent(this, CreateBoardActivity::class.java)
+            intent.putExtra(USER_KEY_MODEL, user)
+            intent.putExtra(NAME_USER_KEY, mUserName)
 
             startActivity(intent)
         }
     }
+
 
     @SuppressLint("UseCompatLoadingForDrawables")
     private fun setupActionBar() {
@@ -109,10 +118,10 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if(requestCode == PROFILE_KEY && resultCode == Activity.RESULT_OK){
+        if (requestCode == PROFILE_KEY && resultCode == Activity.RESULT_OK) {
             FirestoreClass().loadUserData(this)
-        }else{
-            Log.e(MainActivity::class.java.simpleName, "onActivityResult: Error" )
+        } else {
+            Log.e(MainActivity::class.java.simpleName, "onActivityResult: Error")
         }
     }
 
@@ -135,4 +144,31 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         user = loggedInUser
 
     }
+
+     fun loadRecyclerView(listBoard:ArrayList<BoardModel>) {
+        hideProgressDialog()
+
+        if (listBoard.size > 0) {
+            rv_content_boards_list.visibility = View.VISIBLE
+            tv_content_no_boards_available.visibility = View.GONE
+
+            boardItemsAdapter = BoardItemsAdapter(this, listBoard)
+
+            val linearLayoutManager = LinearLayoutManager(this)
+
+            rv_content_boards_list.setHasFixedSize(true)
+            rv_content_boards_list.layoutManager = linearLayoutManager
+            rv_content_boards_list.adapter = boardItemsAdapter
+
+
+
+
+        } else {
+            rv_content_boards_list.visibility = View.GONE
+            tv_content_no_boards_available.visibility = View.VISIBLE
+
+        }
+    }
+
+
 }
