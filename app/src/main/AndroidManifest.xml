@@ -15,11 +15,16 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.TrelloApp.NoActionBar">
-        <activity android:name=".ui.CreateBoardActivity"
+        <activity
+            android:name=".ui.TaskListActivity"
             android:parentActivityName=".ui.MainActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.TrelloApp.NoActionBar"
-            />
+            android:theme="@style/Theme.TrelloApp.NoActionBar" />
+        <activity
+            android:name=".ui.CreateBoardActivity"
+            android:parentActivityName=".ui.MainActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.TrelloApp.NoActionBar" />
         <activity
             android:name=".ui.MyProfileActivity"
             android:parentActivityName=".ui.MainActivity"

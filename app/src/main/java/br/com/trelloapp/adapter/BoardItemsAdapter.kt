@@ -15,28 +15,28 @@ open class BoardItemsAdapter(
     private val context: Context,
     private var listBoard: List<BoardModel>
 ) :
-    RecyclerView.Adapter<BoardItemsAdapter.MyViewHoder>() {
+    RecyclerView.Adapter<BoardItemsAdapter.MyViewHolder>() {
 
     private var onClickListener: OnClickListener? = null
 
 
-    open class MyViewHoder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    open class MyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val boardImage: CircleImageView = itemView.findViewById(R.id.iv_adapter_board_image)
         val textName: TextView = itemView.findViewById(R.id.tv_board_adapter_name)
         val textDate: TextView = itemView.findViewById(R.id.tv_board_adapter_created_at)
         val textCreatedBy: TextView = itemView.findViewById(R.id.tv_board_adapter_created_by)
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHoder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         val view: View =
             LayoutInflater.from(parent.context).inflate(R.layout.item_board, parent, false)
-        return MyViewHoder(view)
+        return MyViewHolder(view)
     }
 
     override fun getItemCount(): Int = listBoard.size
 
 
-    override fun onBindViewHolder(holder: MyViewHoder, position: Int) {
+    override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         val board = listBoard[position]
 
         Glide.with(context).load(board.image).centerCrop()
@@ -59,6 +59,10 @@ open class BoardItemsAdapter(
 
     override fun getItemViewType(position: Int): Int {
         return super.getItemViewType(position)
+    }
+
+    fun setOnClickListener(onClickListener: OnClickListener) {
+        this.onClickListener = onClickListener
     }
 
     interface OnClickListener {

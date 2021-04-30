@@ -14,6 +14,7 @@ import br.com.trelloapp.adapter.BoardItemsAdapter
 import br.com.trelloapp.firebase.FirestoreClass
 import br.com.trelloapp.model.BoardModel
 import br.com.trelloapp.model.UserModel
+import br.com.trelloapp.utils.Constants.BOARDS_KEY_NAME
 import br.com.trelloapp.utils.Constants.NAME_USER_KEY
 import br.com.trelloapp.utils.Constants.USER_KEY_MODEL
 import com.bumptech.glide.Glide
@@ -28,6 +29,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
     companion object {
         const val PROFILE_KEY: Int = 145
+        const val CREATE_BOARD_REQUEST_CODE: Int = 315
     }
 
 
@@ -59,7 +61,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             intent.putExtra(USER_KEY_MODEL, user)
             intent.putExtra(NAME_USER_KEY, mUserName)
 
-            startActivity(intent)
+            startActivityForResult(intent, CREATE_BOARD_REQUEST_CODE)
         }
     }
 
@@ -120,6 +122,8 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == PROFILE_KEY && resultCode == Activity.RESULT_OK) {
             FirestoreClass().loadUserData(this)
+        } else if (requestCode == CREATE_BOARD_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            FirestoreClass().loadUserData(this)
         } else {
             Log.e(MainActivity::class.java.simpleName, "onActivityResult: Error")
         }
@@ -145,7 +149,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
     }
 
-     fun loadRecyclerView(listBoard:ArrayList<BoardModel>) {
+    fun loadRecyclerView(listBoard: ArrayList<BoardModel>) {
         hideProgressDialog()
 
         if (listBoard.size > 0) {
@@ -153,6 +157,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             tv_content_no_boards_available.visibility = View.GONE
 
             boardItemsAdapter = BoardItemsAdapter(this, listBoard)
+            boardItemsAdapter.setHasStableIds(false)
 
             val linearLayoutManager = LinearLayoutManager(this)
 
@@ -161,6 +166,15 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             rv_content_boards_list.adapter = boardItemsAdapter
 
 
+            boardItemsAdapter.setOnClickListener(object: BoardItemsAdapter.OnClickListener{
+                override fun onClick(position: Int, model: BoardModel) {
+
+                    val intent = Intent(this@MainActivity,TaskListActivity::class.java)
+                    intent.putExtra(BOARDS_KEY_NAME,model)
+                    startActivity(intent)
+                }
+
+            })
 
 
         } else {

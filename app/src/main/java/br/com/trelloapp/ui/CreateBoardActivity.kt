@@ -112,8 +112,10 @@ class CreateBoardActivity : BaseActivity(), View.OnClickListener {
         val name: String = et_create_board_name.text.toString()
         mCurrentDate = getCurrentDate()
 
+        val dateLong:Long = System.currentTimeMillis()
+
         val board = BoardModel(
-            name, mBoardImageUrl, mUserName, mCurrentDate, assignedUserArrayList
+            name, mBoardImageUrl, mUserName, mCurrentDate,dateLong, assignedUserArrayList
         )
 
         //creating board
@@ -208,8 +210,11 @@ class CreateBoardActivity : BaseActivity(), View.OnClickListener {
 
     fun boardCreatedSuccessfully() {
         hideProgressDialog()
+        setResult(Activity.RESULT_OK)
         finish()
     }
+
+
 
 }
 

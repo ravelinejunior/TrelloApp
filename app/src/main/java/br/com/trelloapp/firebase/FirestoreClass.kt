@@ -3,16 +3,18 @@ package br.com.trelloapp.firebase
 import android.app.Activity
 import android.util.Log
 import android.widget.Toast
-import br.com.trelloapp.R
 import br.com.trelloapp.model.BoardModel
 import br.com.trelloapp.model.UserModel
 import br.com.trelloapp.ui.*
 import br.com.trelloapp.utils.Constants.ASSIGNED_TO_KEY
 import br.com.trelloapp.utils.Constants.BOARDS_KEY_NAME
+import br.com.trelloapp.utils.Constants.CREATED_AT_DATE_KEY
+import br.com.trelloapp.utils.Constants.CREATED_AT_KEY
 import br.com.trelloapp.utils.Constants.USER_COLLECTION_NAME
 import br.com.trelloapp.utils.Constants.isNetworkAvailable
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.SetOptions
 
 class FirestoreClass {
@@ -31,8 +33,7 @@ class FirestoreClass {
             }
     }
 
-    fun loadBoardFromServer(activity: MainActivity) {
-activity.showProgressDialog("Please wait ... ")
+    private fun loadBoardFromServer(activity: MainActivity) {
         mFirestore.collection(BOARDS_KEY_NAME)
             .whereArrayContains(ASSIGNED_TO_KEY, getCurrentUserId())
             .get()
@@ -46,7 +47,8 @@ activity.showProgressDialog("Please wait ... ")
 
                     Log.i("TAGFirestore", boardList.toString())
                 }
-
+                boardList.sortBy { boardModel -> boardModel.createdAtDate }
+                boardList.reverse()
                 activity.loadRecyclerView(boardList)
 
             }
@@ -59,6 +61,7 @@ activity.showProgressDialog("Please wait ... ")
                 )
 
             }
+        activity.showProgressDialog("Please wait ... ")
 
     }
 

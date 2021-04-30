@@ -8,6 +8,7 @@ data class BoardModel(
     val image: String = "",
     val createdBy: String = "",
     val createdAt: String = "",
+    val createdAtDate: Long = 0L,
     val assignedTo: ArrayList<String> = ArrayList(),
     var documentId:String = ""
 ) : Parcelable {
@@ -16,6 +17,7 @@ data class BoardModel(
         parcel.readString().toString(),
         parcel.readString().toString(),
         parcel.readString().toString(),
+        parcel.readLong(),
         parcel.createStringArrayList()!!,
         parcel.readString().toString()
 
@@ -26,6 +28,7 @@ data class BoardModel(
         parcel.writeString(image)
         parcel.writeString(createdBy)
         parcel.writeString(createdAt)
+        parcel.writeLong(createdAtDate)
         parcel.writeStringList(assignedTo)
         parcel.writeString(documentId)
     }
