@@ -10,7 +10,8 @@ data class BoardModel(
     val createdAt: String = "",
     val createdAtDate: Long = 0L,
     val assignedTo: ArrayList<String> = ArrayList(),
-    var documentId:String = ""
+    var documentId: String = "",
+    var taskList: ArrayList<TaskModel> = ArrayList()
 ) : Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readString().toString(),
@@ -19,9 +20,10 @@ data class BoardModel(
         parcel.readString().toString(),
         parcel.readLong(),
         parcel.createStringArrayList()!!,
-        parcel.readString().toString()
+        parcel.readString().toString(),
+        parcel.createTypedArrayList(TaskModel.CREATOR)!!
 
-        )
+    )
 
     override fun writeToParcel(parcel: Parcel, flags: Int) = with(parcel) {
         parcel.writeString(name)
@@ -31,6 +33,7 @@ data class BoardModel(
         parcel.writeLong(createdAtDate)
         parcel.writeStringList(assignedTo)
         parcel.writeString(documentId)
+        parcel.writeTypedList(taskList)
     }
 
     override fun describeContents(): Int = 0

@@ -8,13 +8,10 @@ import br.com.trelloapp.model.UserModel
 import br.com.trelloapp.ui.*
 import br.com.trelloapp.utils.Constants.ASSIGNED_TO_KEY
 import br.com.trelloapp.utils.Constants.BOARDS_KEY_NAME
-import br.com.trelloapp.utils.Constants.CREATED_AT_DATE_KEY
-import br.com.trelloapp.utils.Constants.CREATED_AT_KEY
 import br.com.trelloapp.utils.Constants.USER_COLLECTION_NAME
 import br.com.trelloapp.utils.Constants.isNetworkAvailable
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.SetOptions
 
 class FirestoreClass {
@@ -62,6 +59,29 @@ class FirestoreClass {
 
             }
         activity.showProgressDialog("Please wait ... ")
+
+    }
+
+
+    fun getBoardDetail(activity: TaskListActivity, documentId: String) {
+        mFirestore.collection(BOARDS_KEY_NAME)
+            .document(documentId)
+            .get()
+            .addOnSuccessListener { document ->
+                val board = document.toObject(BoardModel::class.java)
+                board?.let {
+                    activity.boardDetails(it)
+                    Toast.makeText(activity, "Request ${it.createdBy}", Toast.LENGTH_SHORT).show()
+                }
+            }.addOnFailureListener { exception ->
+                activity.hideProgressDialog()
+                Log.e(
+                    activity.javaClass.simpleName,
+                    "Error loading boards:${exception.printStackTrace()}"
+                )
+
+            }
+
 
     }
 

@@ -9,7 +9,6 @@ import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
 import android.webkit.MimeTypeMap
-import br.com.trelloapp.ui.MyProfileActivity
 
 object Constants {
     fun isNetworkAvailable(context: Context): Boolean {
@@ -34,13 +33,14 @@ object Constants {
 
     }
 
-     fun showImageChooser(activity: Activity) {
+    fun showImageChooser(activity: Activity) {
         val galleryIntent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
         activity.startActivityForResult(galleryIntent, PICK_IMAGE_REQUEST_CODE)
     }
 
-     fun getFileExtension(uri: Uri?,activity: Activity): String? {
-        return MimeTypeMap.getSingleton().getExtensionFromMimeType(activity.contentResolver.getType(uri!!))
+    fun getFileExtension(uri: Uri?, activity: Activity): String? {
+        return MimeTypeMap.getSingleton()
+            .getExtensionFromMimeType(activity.contentResolver.getType(uri!!))
     }
 
     //User Firebase variables
@@ -51,6 +51,7 @@ object Constants {
     const val NAME_USER_KEY = "name"
     const val MOBILE_USER_KEY = "mobile"
     const val ASSIGNED_TO_KEY = "assignedTo"
+    const val DOCUMENT_ID_KEY = "documentId"
     const val CREATED_AT_KEY = "createdAt"
     const val CREATED_AT_DATE_KEY = "createdAtDate"
 
