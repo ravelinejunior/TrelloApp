@@ -4,6 +4,7 @@ import android.app.Activity
 import android.util.Log
 import android.widget.Toast
 import br.com.trelloapp.model.BoardModel
+import br.com.trelloapp.model.TaskModel
 import br.com.trelloapp.model.UserModel
 import br.com.trelloapp.ui.*
 import br.com.trelloapp.utils.Constants.ASSIGNED_TO_KEY
@@ -11,6 +12,7 @@ import br.com.trelloapp.utils.Constants.BOARDS_KEY_NAME
 import br.com.trelloapp.utils.Constants.TASK_LIST
 import br.com.trelloapp.utils.Constants.USER_COLLECTION_NAME
 import br.com.trelloapp.utils.Constants.isNetworkAvailable
+import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
@@ -122,10 +124,9 @@ class FirestoreClass {
                     activity.javaClass.simpleName,
                     "Error loading boards:${exception.printStackTrace()}"
                 )
-
             }
-
     }
+
 
     fun loadUserData(activity: Activity, readBoardList: Boolean = false) {
         mFirestore.collection(USER_COLLECTION_NAME)
@@ -197,7 +198,6 @@ class FirestoreClass {
             }.addOnFailureListener { e ->
                 activity.hideProgressDialog()
             }
-
     }
 
     fun getCurrentUserId(): String {
@@ -209,4 +209,5 @@ class FirestoreClass {
         }
         return currentID
     }
+
 }

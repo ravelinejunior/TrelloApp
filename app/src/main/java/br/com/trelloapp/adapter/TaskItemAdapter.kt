@@ -1,5 +1,7 @@
 package br.com.trelloapp.adapter
 
+import android.app.AlertDialog
+import android.app.Dialog
 import android.content.Context
 import android.content.res.Resources
 import android.view.LayoutInflater
@@ -48,7 +50,7 @@ class TaskItemAdapter(private val context: Context, private var listTask: ArrayL
             holder.itemView.cv_add_task_list_name.visibility = View.VISIBLE
         }
 
-        holder.itemView.ib_task_list_close_card_name.setOnClickListener {
+        holder.itemView.ib_task_list_close_list_name.setOnClickListener {
             holder.itemView.tv_add_item_task_list.visibility = View.VISIBLE
             holder.itemView.cv_add_task_list_name.visibility = View.GONE
         }
@@ -59,17 +61,70 @@ class TaskItemAdapter(private val context: Context, private var listTask: ArrayL
 
             if (listName.isNotEmpty()) {
                 if (context is TaskListActivity) {
-                    context.createTaskList(listName,position)
+                    context.createTaskList(listName, position)
                 }
             } else {
                 Toast.makeText(context, "Type the title.", Toast.LENGTH_SHORT).show()
             }
         }
 
+
+        holder.itemView.ib_task_list_edit_list_name.setOnClickListener {
+            holder.itemView.et_item_edit_task_list_name.setText(model.title)
+            holder.itemView.ll_title_view.visibility = View.GONE
+            holder.itemView.cv_edit_task_list_name.visibility = View.VISIBLE
+        }
+
+        holder.itemView.ib_task_list_close_editable_view.setOnClickListener {
+            holder.itemView.ll_title_view.visibility = View.VISIBLE
+            holder.itemView.cv_edit_task_list_name.visibility = View.GONE
+        }
+
+        holder.itemView.ib_task_list_done_edit_list_name.setOnClickListener {
+            // done editing and saving on firebase
+            val listName: String = holder.itemView.et_item_edit_task_list_name.text.toString()
+
+            if (listName.isNotEmpty()) {
+                if (context is TaskListActivity) {
+                    context.updateTaskList(position, listName, model)
+                }
+            } else {
+                Toast.makeText(context, "Type the title.", Toast.LENGTH_SHORT).show()
+            }
+
+        }
+
+        holder.itemView.ib_task_list_delete_list.setOnClickListener {
+            //delete
+            alertDialogDeleletedList(position, model.title)
+        }
+
     }
 
     private fun Int.toDP(): Int = (this / Resources.getSystem().displayMetrics.density).toInt()
     private fun Int.toPX(): Int = (this * Resources.getSystem().displayMetrics.density).toInt()
+
+    private fun alertDialogDeleletedList(position: Int, title: String) {
+        val builder = AlertDialog.Builder(context)
+        builder.setTitle("Alert")
+        builder.setMessage("Are you sure you want to delete $title?")
+        builder.setIcon(android.R.drawable.ic_dialog_alert)
+        builder.setPositiveButton("Yes") { dialog, which ->
+
+            dialog.dismiss()
+
+            if (context is TaskListActivity) {
+                context.deleteTaskList(position)
+            }
+        }
+        builder.setNegativeButton("No") { dialogInterface, i ->
+            dialogInterface.dismiss()
+        }
+
+        val dialog: Dialog = builder.create()
+        dialog.setCancelable(false)
+        dialog.show()
+    }
 
     class MyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
 }
