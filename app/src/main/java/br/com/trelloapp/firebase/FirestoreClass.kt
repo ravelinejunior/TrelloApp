@@ -8,6 +8,7 @@ import br.com.trelloapp.model.UserModel
 import br.com.trelloapp.ui.*
 import br.com.trelloapp.utils.Constants.ASSIGNED_TO_KEY
 import br.com.trelloapp.utils.Constants.BOARDS_KEY_NAME
+import br.com.trelloapp.utils.Constants.TASK_LIST
 import br.com.trelloapp.utils.Constants.USER_COLLECTION_NAME
 import br.com.trelloapp.utils.Constants.isNetworkAvailable
 import com.google.firebase.auth.FirebaseAuth
@@ -69,9 +70,10 @@ class FirestoreClass {
             .get()
             .addOnSuccessListener { document ->
                 val board = document.toObject(BoardModel::class.java)
+
                 board?.let {
-                    activity.boardDetails(it)
-                    Toast.makeText(activity, "Request ${it.createdBy}", Toast.LENGTH_SHORT).show()
+                    board.documentId = it.documentId
+                    activity.boardDetails(board)
                 }
             }.addOnFailureListener { exception ->
                 activity.hideProgressDialog()
@@ -82,6 +84,46 @@ class FirestoreClass {
 
             }
 
+
+    }
+
+    fun addUpdateTaskList(activity: TaskListActivity, board: BoardModel) {
+        val taskListHashMap = HashMap<String, Any>()
+        taskListHashMap[TASK_LIST] = board.taskList
+
+        /*
+        *   task[
+        *     {
+        *       nome: "banana",
+        *       content:"barra"
+        *     },
+        *
+        *     {
+        *      nome: "banana",
+               content:"barra"
+              },
+
+              {
+               nome: "banana",
+               content:"barra"
+              },
+         ]
+
+       **/
+
+        mFirestore.collection(BOARDS_KEY_NAME)
+            .document(board.documentId)
+            .update(taskListHashMap)
+            .addOnSuccessListener {
+                activity.addUpdateTaskListBoard()
+            }.addOnFailureListener { exception ->
+                activity.hideProgressDialog()
+                Log.e(
+                    activity.javaClass.simpleName,
+                    "Error loading boards:${exception.printStackTrace()}"
+                )
+
+            }
 
     }
 

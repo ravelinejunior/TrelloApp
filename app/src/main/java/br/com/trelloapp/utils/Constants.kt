@@ -61,4 +61,7 @@ object Constants {
     const val BOARDS_KEY_NAME = "Boards"
     const val BOARD_IMAGE_REF = "Board_Image"
 
+    //Task
+    const val TASK_LIST: String = "taskList"
+
 }

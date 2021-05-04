@@ -6,9 +6,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import br.com.trelloapp.R
 import br.com.trelloapp.model.TaskModel
+import br.com.trelloapp.ui.TaskListActivity
 import kotlinx.android.synthetic.main.item_task.view.*
 
 class TaskItemAdapter(private val context: Context, private var listTask: ArrayList<TaskModel>) :
@@ -39,6 +41,30 @@ class TaskItemAdapter(private val context: Context, private var listTask: ArrayL
             holder.itemView.tv_add_item_task_list.visibility = View.GONE
             holder.itemView.ll_task_item.visibility = View.VISIBLE
 
+        }
+
+        holder.itemView.tv_item_task_list_title.text = model.title
+        holder.itemView.tv_add_item_task_list.setOnClickListener {
+            holder.itemView.tv_add_item_task_list.visibility = View.GONE
+            holder.itemView.cv_add_task_list_name.visibility = View.VISIBLE
+        }
+
+        holder.itemView.ib_task_list_close_card_name.setOnClickListener {
+            holder.itemView.tv_add_item_task_list.visibility = View.VISIBLE
+            holder.itemView.cv_add_task_list_name.visibility = View.GONE
+        }
+
+        holder.itemView.ib_task_list_done_list_name.setOnClickListener {
+            //save and display board
+            val listName: String = holder.itemView.et__item_task_list_name.text.toString()
+
+            if (listName.isNotEmpty()) {
+                if (context is TaskListActivity) {
+                    context.createTaskList(listName)
+                }
+            } else {
+                Toast.makeText(context, "Type the title.", Toast.LENGTH_SHORT).show()
+            }
         }
 
     }

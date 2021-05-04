@@ -12,7 +12,7 @@ import kotlinx.android.synthetic.main.activity_task_list.*
 
 class TaskListActivity : BaseActivity() {
 
-    private lateinit var boardModel: BoardModel
+    private lateinit var mBoardModel: BoardModel
     private lateinit var taskAdapter: TaskItemAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -20,12 +20,12 @@ class TaskListActivity : BaseActivity() {
         setContentView(R.layout.activity_task_list)
 
         if (intent.extras != null) {
-            boardModel = intent.getParcelableExtra(BOARDS_KEY_NAME)!!
+            mBoardModel = intent.getParcelableExtra(BOARDS_KEY_NAME)!!
         }
 
         showProgressDialog(resources.getString(R.string.please_wait))
 
-        FirestoreClass().getBoardDetail(this, boardModel.documentId)
+        FirestoreClass().getBoardDetail(this, mBoardModel.documentId)
 
         setupActionBar()
 
@@ -37,7 +37,7 @@ class TaskListActivity : BaseActivity() {
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true)
             actionBar.setHomeAsUpIndicator(R.drawable.ic_baseline_arrow_white)
-            actionBar.title = boardModel.name
+            actionBar.title = mBoardModel.name
         }
     }
 
@@ -58,5 +58,24 @@ class TaskListActivity : BaseActivity() {
 
         rv_task_list.adapter = taskAdapter
 
+    }
+
+    fun addUpdateTaskListBoard() {
+
+        hideProgressDialog()
+
+        showProgressDialog(resources.getString(R.string.please_wait))
+        FirestoreClass().getBoardDetail(this, mBoardModel.documentId)
+
+    }
+
+    fun createTaskList(taskListName: String) {
+        val task = TaskModel(taskListName, FirestoreClass().getCurrentUserId(), getCurrentDate())
+        mBoardModel.taskList.add(0, task)
+        mBoardModel.taskList.removeAt(mBoardModel.taskList.size - 1)
+
+        showProgressDialog(resources.getString(R.string.please_wait))
+
+        FirestoreClass().addUpdateTaskList(this,mBoardModel)
     }
 }
