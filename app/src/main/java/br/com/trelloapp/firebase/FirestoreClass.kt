@@ -72,7 +72,7 @@ class FirestoreClass {
                 val board = document.toObject(BoardModel::class.java)
 
                 board?.let {
-                    board.documentId = it.documentId
+                    board.documentId = documentId
                     activity.boardDetails(board)
                 }
             }.addOnFailureListener { exception ->

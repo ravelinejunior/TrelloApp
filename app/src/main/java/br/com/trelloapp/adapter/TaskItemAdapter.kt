@@ -40,7 +40,6 @@ class TaskItemAdapter(private val context: Context, private var listTask: ArrayL
         } else {
             holder.itemView.tv_add_item_task_list.visibility = View.GONE
             holder.itemView.ll_task_item.visibility = View.VISIBLE
-
         }
 
         holder.itemView.tv_item_task_list_title.text = model.title
@@ -60,7 +59,7 @@ class TaskItemAdapter(private val context: Context, private var listTask: ArrayL
 
             if (listName.isNotEmpty()) {
                 if (context is TaskListActivity) {
-                    context.createTaskList(listName)
+                    context.createTaskList(listName,position)
                 }
             } else {
                 Toast.makeText(context, "Type the title.", Toast.LENGTH_SHORT).show()

@@ -69,13 +69,13 @@ class TaskListActivity : BaseActivity() {
 
     }
 
-    fun createTaskList(taskListName: String) {
+    fun createTaskList(taskListName: String,position:Int) {
         val task = TaskModel(taskListName, FirestoreClass().getCurrentUserId(), getCurrentDate())
-        mBoardModel.taskList.add(0, task)
-        mBoardModel.taskList.removeAt(mBoardModel.taskList.size - 1)
+        mBoardModel.taskList.add(position, task)
 
         showProgressDialog(resources.getString(R.string.please_wait))
 
-        FirestoreClass().addUpdateTaskList(this,mBoardModel)
+        FirestoreClass().addUpdateTaskList(this, mBoardModel)
+
     }
 }
