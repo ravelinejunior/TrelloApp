@@ -6,6 +6,7 @@ plugins {
 }
 
 android {
+    apply plugin: 'com.google.firebase.firebase-perf'
     compileSdkVersion 30
     buildToolsVersion "30.0.2"
 
@@ -42,6 +43,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-auth-ktx'
     implementation 'com.google.firebase:firebase-firestore-ktx'
     implementation 'com.google.firebase:firebase-storage-ktx'
+    implementation 'com.google.firebase:firebase-perf'
 
     //Circle Image View
     implementation 'de.hdodenhof:circleimageview:3.1.0'

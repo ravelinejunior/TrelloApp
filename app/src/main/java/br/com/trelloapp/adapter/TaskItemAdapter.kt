@@ -99,6 +99,29 @@ class TaskItemAdapter(private val context: Context, private var listTask: ArrayL
             alertDialogDeleletedList(position, model.title)
         }
 
+        holder.itemView.tv_item_add_card.setOnClickListener {
+            holder.itemView.tv_item_add_card.visibility = View.GONE
+            holder.itemView.cv_add_card.visibility = View.VISIBLE
+        }
+
+        holder.itemView.ib_task_list_close_card_name.setOnClickListener {
+            holder.itemView.tv_item_add_card.visibility = View.VISIBLE
+            holder.itemView.cv_add_card.visibility = View.GONE
+        }
+
+        holder.itemView.ib_task_list_done_card_name.setOnClickListener {
+            //save and display board
+            val cardName: String = holder.itemView.et_item_card_name.text.toString()
+
+            if (cardName.isNotEmpty()) {
+                if (context is TaskListActivity) {
+                    context.addCardToTaskList(cardName, position)
+                }
+            } else {
+                Toast.makeText(context, "Type the title.", Toast.LENGTH_SHORT).show()
+            }
+        }
+
     }
 
     private fun Int.toDP(): Int = (this / Resources.getSystem().displayMetrics.density).toInt()

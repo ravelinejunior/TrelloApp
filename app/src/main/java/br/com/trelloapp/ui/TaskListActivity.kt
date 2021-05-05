@@ -6,8 +6,10 @@ import br.com.trelloapp.R
 import br.com.trelloapp.adapter.TaskItemAdapter
 import br.com.trelloapp.firebase.FirestoreClass
 import br.com.trelloapp.model.BoardModel
+import br.com.trelloapp.model.CardModel
 import br.com.trelloapp.model.TaskModel
 import br.com.trelloapp.utils.Constants.BOARDS_KEY_NAME
+import br.com.trelloapp.utils.Constants.isNetworkAvailable
 import kotlinx.android.synthetic.main.activity_task_list.*
 
 class TaskListActivity : BaseActivity() {
@@ -23,9 +25,10 @@ class TaskListActivity : BaseActivity() {
             mBoardModel = intent.getParcelableExtra(BOARDS_KEY_NAME)!!
         }
 
-        showProgressDialog(resources.getString(R.string.please_wait))
-
-        FirestoreClass().getBoardDetail(this, mBoardModel.documentId)
+        if (isNetworkAvailable(this)) {
+            showProgressDialog(resources.getString(R.string.please_wait))
+            FirestoreClass().getBoardDetail(this, mBoardModel.documentId)
+        }
 
         setupActionBar()
 
@@ -44,57 +47,99 @@ class TaskListActivity : BaseActivity() {
     fun boardDetails(board: BoardModel) {
         hideProgressDialog()
 
-        val addTaskList = TaskModel(
-            resources.getString(R.string.add_list)
-        )
+        if (isNetworkAvailable(this)) {
 
-        board.taskList.add(addTaskList)
+            val addTaskList = TaskModel(
+                resources.getString(R.string.add_list)
+            )
 
-        rv_task_list.layoutManager =
-            LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
-        rv_task_list.setHasFixedSize(true)
+            board.taskList.add(addTaskList)
 
-        taskAdapter = TaskItemAdapter(this, board.taskList)
+            rv_task_list.layoutManager =
+                LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+            rv_task_list.setHasFixedSize(true)
 
-        rv_task_list.adapter = taskAdapter
+            taskAdapter = TaskItemAdapter(this, board.taskList)
+
+            rv_task_list.adapter = taskAdapter
+        }
 
     }
 
     fun addUpdateTaskListBoard() {
 
-        hideProgressDialog()
+        if (isNetworkAvailable(this)) {
+            hideProgressDialog()
 
-        showProgressDialog(resources.getString(R.string.please_wait))
-        FirestoreClass().getBoardDetail(this, mBoardModel.documentId)
+            showProgressDialog(resources.getString(R.string.please_wait))
+            FirestoreClass().getBoardDetail(this, mBoardModel.documentId)
+        }
 
     }
 
     fun createTaskList(taskListName: String, position: Int) {
-        val task = TaskModel(taskListName, FirestoreClass().getCurrentUserId(), getCurrentDate())
-        mBoardModel.taskList.add(position, task)
+        if (isNetworkAvailable(this)) {
+            val task =
+                TaskModel(taskListName, FirestoreClass().getCurrentUserId(), getCurrentDate())
+            mBoardModel.taskList.add(position, task)
 
-        showProgressDialog(resources.getString(R.string.please_wait))
+            showProgressDialog(resources.getString(R.string.please_wait))
 
-        FirestoreClass().addUpdateTaskList(this, mBoardModel)
+            FirestoreClass().addUpdateTaskList(this, mBoardModel)
+        }
 
     }
 
     fun updateTaskList(position: Int, listName: String, model: TaskModel) {
-        val task = TaskModel(listName, model.createdBy, model.createdAt)
+        if (isNetworkAvailable(this)) {
+            val task = TaskModel(listName, model.createdBy, model.createdAt)
 
-        mBoardModel.taskList[position] = task
-        //mBoardModel.taskList.removeAt(mBoardModel.taskList.size - 1)
+            mBoardModel.taskList[position] = task
 
-        showProgressDialog(resources.getString(R.string.please_wait))
+            showProgressDialog(resources.getString(R.string.please_wait))
 
-        FirestoreClass().addUpdateTaskList(this, mBoardModel)
+            FirestoreClass().addUpdateTaskList(this, mBoardModel)
+        }
 
     }
 
     fun deleteTaskList(position: Int) {
-        showProgressDialog(resources.getString(R.string.please_wait))
-        mBoardModel.taskList.removeAt(position)
-        FirestoreClass().addUpdateTaskList(this, mBoardModel)
+        if (isNetworkAvailable(this)) {
+            showProgressDialog(resources.getString(R.string.please_wait))
+            mBoardModel.taskList.removeAt(position)
+            FirestoreClass().addUpdateTaskList(this, mBoardModel)
+        }
+    }
+
+    fun addCardToTaskList(cardName: String, position: Int) {
+        if (isNetworkAvailable(this)) {
+
+
+
+            showProgressDialog(resources.getString(R.string.please_wait))
+
+            val cardAssignedUsersList: ArrayList<String> = ArrayList()
+
+            cardAssignedUsersList.add(FirestoreClass().getCurrentUserId())
+
+            val card = CardModel(cardName, FirestoreClass().getCurrentUserId(), getCurrentDate(), cardAssignedUsersList)
+
+            val cardList = mBoardModel.taskList[position].cards
+            cardList.add(card)
+
+            val task =
+                TaskModel(
+                    mBoardModel.taskList[position].title,
+                    mBoardModel.taskList[position].createdBy,
+                    mBoardModel.taskList[position].createdAt,
+                    cardList
+                )
+
+            mBoardModel.taskList[position] = task
+
+            FirestoreClass().addUpdateTaskList(this, mBoardModel)
+
+        }
     }
 
 }

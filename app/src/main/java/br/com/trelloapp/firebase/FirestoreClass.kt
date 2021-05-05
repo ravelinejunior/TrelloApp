@@ -4,7 +4,6 @@ import android.app.Activity
 import android.util.Log
 import android.widget.Toast
 import br.com.trelloapp.model.BoardModel
-import br.com.trelloapp.model.TaskModel
 import br.com.trelloapp.model.UserModel
 import br.com.trelloapp.ui.*
 import br.com.trelloapp.utils.Constants.ASSIGNED_TO_KEY
@@ -12,7 +11,6 @@ import br.com.trelloapp.utils.Constants.BOARDS_KEY_NAME
 import br.com.trelloapp.utils.Constants.TASK_LIST
 import br.com.trelloapp.utils.Constants.USER_COLLECTION_NAME
 import br.com.trelloapp.utils.Constants.isNetworkAvailable
-import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
@@ -41,9 +39,9 @@ class FirestoreClass {
                 val boardList: ArrayList<BoardModel> = ArrayList()
                 for (newBoard in document.documents) {
 
-                    val board = newBoard.toObject(BoardModel::class.java)
-                    board?.documentId = newBoard.id
-                    boardList.add(board!!)
+                    val board: BoardModel= newBoard.toObject(BoardModel::class.java)!!
+                    board.documentId = newBoard.id
+                    boardList.add(board)
 
                     Log.i("TAGFirestore", boardList.toString())
                 }
@@ -71,12 +69,10 @@ class FirestoreClass {
             .document(documentId)
             .get()
             .addOnSuccessListener { document ->
-                val board = document.toObject(BoardModel::class.java)
+                val board = document.toObject(BoardModel::class.java)!!
+                board.documentId = documentId
+                activity.boardDetails(board)
 
-                board?.let {
-                    board.documentId = documentId
-                    activity.boardDetails(board)
-                }
             }.addOnFailureListener { exception ->
                 activity.hideProgressDialog()
                 Log.e(
@@ -92,26 +88,6 @@ class FirestoreClass {
     fun addUpdateTaskList(activity: TaskListActivity, board: BoardModel) {
         val taskListHashMap = HashMap<String, Any>()
         taskListHashMap[TASK_LIST] = board.taskList
-
-        /*
-        *   task[
-        *     {
-        *       nome: "banana",
-        *       content:"barra"
-        *     },
-        *
-        *     {
-        *      nome: "banana",
-               content:"barra"
-              },
-
-              {
-               nome: "banana",
-               content:"barra"
-              },
-         ]
-
-       **/
 
         mFirestore.collection(BOARDS_KEY_NAME)
             .document(board.documentId)
