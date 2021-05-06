@@ -1,5 +1,6 @@
 package br.com.trelloapp.ui
 
+import android.app.Dialog
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -13,6 +14,7 @@ import br.com.trelloapp.model.UserModel
 import br.com.trelloapp.utils.Constants.BOARD_DETAIL
 import br.com.trelloapp.utils.Constants.isNetworkAvailable
 import kotlinx.android.synthetic.main.activity_members.*
+import kotlinx.android.synthetic.main.dialog_search_member.*
 
 class MembersActivity : BaseActivity() {
 
@@ -70,9 +72,33 @@ class MembersActivity : BaseActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.action_add_member_menu_id -> {
-                Toast.makeText(this, mBoard.name, Toast.LENGTH_SHORT).show()
+                dialogSearchMember()
+                return true
             }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun dialogSearchMember() {
+        val dialog = Dialog(this)
+        dialog.setCancelable(false)
+        dialog.setContentView(R.layout.dialog_search_member)
+        dialog.tv_add.setOnClickListener {
+            val email: String = dialog.et_email_search_member.text.toString()
+            if (email.isEmpty()) {
+                Toast.makeText(this@MembersActivity, "Email can´t be empty.", Toast.LENGTH_SHORT)
+                    .show()
+            } else {
+                dialog.dismiss()
+
+            }
+
+        }
+
+        dialog.tv_cancel.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        dialog.show()
     }
 }
