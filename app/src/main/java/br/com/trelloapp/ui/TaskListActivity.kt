@@ -1,6 +1,9 @@
 package br.com.trelloapp.ui
 
+import android.content.Intent
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
 import androidx.recyclerview.widget.LinearLayoutManager
 import br.com.trelloapp.R
 import br.com.trelloapp.adapter.TaskItemAdapter
@@ -140,6 +143,26 @@ class TaskListActivity : BaseActivity() {
             FirestoreClass().addUpdateTaskList(this, mBoardModel)
 
         }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_members,menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when(item.itemId){
+            R.id.members_menu_item_id -> {
+                val intent = Intent(this@TaskListActivity,MembersActivity::class.java)
+                intent.putExtra(BOARDS_KEY_NAME,mBoardModel)
+                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK
+                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+                startActivity(intent)
+
+            }
+        }
+
+        return super.onOptionsItemSelected(item)
     }
 
 }
