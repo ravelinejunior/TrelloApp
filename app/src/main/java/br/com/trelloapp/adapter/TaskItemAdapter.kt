@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.Toast
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import br.com.trelloapp.R
 import br.com.trelloapp.model.TaskModel
@@ -122,6 +123,13 @@ class TaskItemAdapter(private val context: Context, private var listTask: ArrayL
             }
         }
 
+        //setting adapter
+
+        holder.itemView.rv_item_card_list.layoutManager = LinearLayoutManager(context)
+        holder.itemView.rv_item_card_list.setHasFixedSize(true)
+
+        val adapter = CardListItemsAdapter(context, model.cards)
+        holder.itemView.rv_item_card_list.adapter = adapter
     }
 
     private fun Int.toDP(): Int = (this / Resources.getSystem().displayMetrics.density).toInt()
