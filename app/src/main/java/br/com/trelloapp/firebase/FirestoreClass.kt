@@ -10,6 +10,7 @@ import br.com.trelloapp.utils.Constants.ASSIGNED_TO_KEY
 import br.com.trelloapp.utils.Constants.BOARDS_KEY_NAME
 import br.com.trelloapp.utils.Constants.TASK_LIST
 import br.com.trelloapp.utils.Constants.USER_COLLECTION_NAME
+import br.com.trelloapp.utils.Constants.USER_MEMBER_ID
 import br.com.trelloapp.utils.Constants.isNetworkAvailable
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -176,8 +177,32 @@ class FirestoreClass {
             }
     }
 
+    fun getAssignedMembersDetails(activity: MembersActivity,assignedTo:ArrayList<String>){
+        mFirestore.collection(USER_COLLECTION_NAME)
+            .whereIn(USER_MEMBER_ID,assignedTo)
+            .get()
+            .addOnSuccessListener {
+                document ->
+
+                val usersList:ArrayList<UserModel> = ArrayList()
+
+                for(userFor in document.documents){
+                    val user = userFor.toObject(UserModel::class.java)
+                    usersList.add(user!!)
+                }
+
+                activity.setupMembersList(usersList)
+
+
+            }.addOnFailureListener {
+                exception ->
+                exception.printStackTrace()
+                activity.hideProgressDialog()
+            }
+    }
+
     fun getCurrentUserId(): String {
-        var currentUser = mFirebaseAuth.currentUser
+        val currentUser = mFirebaseAuth.currentUser
         var currentID = ""
 
         if (currentUser != null) {

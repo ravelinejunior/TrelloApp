@@ -62,6 +62,9 @@ object Constants {
     const val BOARD_IMAGE_REF = "Board_Image"
     const val BOARD_DETAIL = "board_detail"
 
+    //Members List
+    const val USER_MEMBER_ID = "id"
+
     //Task
     const val TASK_LIST: String = "taskList"
 
