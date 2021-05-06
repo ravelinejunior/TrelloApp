@@ -14,13 +14,14 @@ import androidx.recyclerview.widget.RecyclerView
 import br.com.trelloapp.R
 import br.com.trelloapp.model.TaskModel
 import br.com.trelloapp.ui.TaskListActivity
-import kotlinx.android.synthetic.main.item_task.view.*
+import kotlinx.android.synthetic.main.item_task_adapter.view.*
 
 class TaskItemAdapter(private val context: Context, private var listTask: ArrayList<TaskModel>) :
     RecyclerView.Adapter<TaskItemAdapter.MyViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
-        val view: View = LayoutInflater.from(context).inflate(R.layout.item_task, parent, false)
+        val view: View =
+            LayoutInflater.from(context).inflate(R.layout.item_task_adapter, parent, false)
         val layoutParams = LinearLayout.LayoutParams(
             parent.width,
             LinearLayout.LayoutParams.WRAP_CONTENT
@@ -45,6 +46,7 @@ class TaskItemAdapter(private val context: Context, private var listTask: ArrayL
             holder.itemView.ll_task_item.visibility = View.VISIBLE
         }
 
+        //Add Card List
         holder.itemView.tv_item_task_list_title.text = model.title
         holder.itemView.tv_add_item_task_list.setOnClickListener {
             holder.itemView.tv_add_item_task_list.visibility = View.GONE
@@ -69,7 +71,7 @@ class TaskItemAdapter(private val context: Context, private var listTask: ArrayL
             }
         }
 
-
+//Edit card list
         holder.itemView.ib_task_list_edit_list_name.setOnClickListener {
             holder.itemView.et_item_edit_task_list_name.setText(model.title)
             holder.itemView.ll_title_view.visibility = View.GONE
@@ -95,11 +97,14 @@ class TaskItemAdapter(private val context: Context, private var listTask: ArrayL
 
         }
 
+        //delete card list
         holder.itemView.ib_task_list_delete_list.setOnClickListener {
             //delete
             alertDialogDeleletedList(position, model.title)
         }
 
+
+        //add card name
         holder.itemView.tv_item_add_card.setOnClickListener {
             holder.itemView.tv_item_add_card.visibility = View.GONE
             holder.itemView.cv_add_card.visibility = View.VISIBLE
@@ -123,7 +128,7 @@ class TaskItemAdapter(private val context: Context, private var listTask: ArrayL
             }
         }
 
-        //setting adapter
+        //setting adapter inside an adapter
 
         holder.itemView.rv_item_card_list.layoutManager = LinearLayoutManager(context)
         holder.itemView.rv_item_card_list.setHasFixedSize(true)

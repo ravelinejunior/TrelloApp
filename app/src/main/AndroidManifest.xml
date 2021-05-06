@@ -17,7 +17,6 @@
         android:theme="@style/Theme.TrelloApp.NoActionBar">
         <activity
             android:name=".ui.MembersActivity"
-            android:parentActivityName=".ui.TaskListActivity"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.TrelloApp.NoActionBar" />
 

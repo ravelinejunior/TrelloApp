@@ -41,6 +41,10 @@ class SignInActivity : BaseActivity(), View.OnClickListener {
             actionBar.setDisplayHomeAsUpEnabled(true)
             actionBar.setHomeAsUpIndicator(R.drawable.ic_black_color_back_24dp)
         }
+
+        toolbar_sign_in_activity.setNavigationOnClickListener {
+            onBackPressed()
+        }
     }
 
     private fun signInRegisteredUser() {

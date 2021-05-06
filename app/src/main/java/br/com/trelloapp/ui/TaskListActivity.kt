@@ -12,6 +12,7 @@ import br.com.trelloapp.model.BoardModel
 import br.com.trelloapp.model.CardModel
 import br.com.trelloapp.model.TaskModel
 import br.com.trelloapp.utils.Constants.BOARDS_KEY_NAME
+import br.com.trelloapp.utils.Constants.BOARD_DETAIL
 import br.com.trelloapp.utils.Constants.isNetworkAvailable
 import kotlinx.android.synthetic.main.activity_task_list.*
 
@@ -44,6 +45,10 @@ class TaskListActivity : BaseActivity() {
             actionBar.setDisplayHomeAsUpEnabled(true)
             actionBar.setHomeAsUpIndicator(R.drawable.ic_baseline_arrow_white)
             actionBar.title = mBoardModel.name
+        }
+
+        toolbar_task_list_activity.setNavigationOnClickListener {
+            onBackPressed()
         }
     }
 
@@ -118,14 +123,18 @@ class TaskListActivity : BaseActivity() {
         if (isNetworkAvailable(this)) {
 
 
-
             showProgressDialog(resources.getString(R.string.please_wait))
 
             val cardAssignedUsersList: ArrayList<String> = ArrayList()
 
             cardAssignedUsersList.add(FirestoreClass().getCurrentUserId())
 
-            val card = CardModel(cardName, FirestoreClass().getCurrentUserId(), getCurrentDate(), cardAssignedUsersList)
+            val card = CardModel(
+                cardName,
+                FirestoreClass().getCurrentUserId(),
+                getCurrentDate(),
+                cardAssignedUsersList
+            )
 
             val cardList = mBoardModel.taskList[position].cards
             cardList.add(card)
@@ -146,15 +155,15 @@ class TaskListActivity : BaseActivity() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.menu_members,menu)
+        menuInflater.inflate(R.menu.menu_members, menu)
         return super.onCreateOptionsMenu(menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when(item.itemId){
+        when (item.itemId) {
             R.id.members_menu_item_id -> {
-                val intent = Intent(this@TaskListActivity,MembersActivity::class.java)
-                intent.putExtra(BOARDS_KEY_NAME,mBoardModel)
+                val intent = Intent(this@TaskListActivity, MembersActivity::class.java)
+                intent.putExtra(BOARD_DETAIL, mBoardModel)
                 intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK
                 intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
                 startActivity(intent)

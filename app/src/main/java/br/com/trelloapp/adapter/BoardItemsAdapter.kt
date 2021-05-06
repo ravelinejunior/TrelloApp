@@ -29,7 +29,7 @@ open class BoardItemsAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         val view: View =
-            LayoutInflater.from(parent.context).inflate(R.layout.item_board, parent, false)
+            LayoutInflater.from(parent.context).inflate(R.layout.item_board_adapter, parent, false)
         return MyViewHolder(view)
     }
 

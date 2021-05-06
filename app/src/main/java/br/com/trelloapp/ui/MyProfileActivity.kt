@@ -71,6 +71,10 @@ class MyProfileActivity : BaseActivity(), View.OnClickListener {
             actionBar.setHomeAsUpIndicator(R.drawable.ic_baseline_arrow_white)
             actionBar.title = user?.name
         }
+
+        toolbar_my_profile_activity.setNavigationOnClickListener {
+            onBackPressed()
+        }
     }
 
     private fun setUserFields(user: UserModel) {

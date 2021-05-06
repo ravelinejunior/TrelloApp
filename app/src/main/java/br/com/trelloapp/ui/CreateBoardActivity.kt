@@ -131,6 +131,10 @@ class CreateBoardActivity : BaseActivity(), View.OnClickListener {
             actionBar.setHomeAsUpIndicator(R.drawable.ic_baseline_arrow_white)
             actionBar.title = resources.getString(R.string.create_board_title)
         }
+
+        toolbar_create_board_activity.setNavigationOnClickListener {
+            onBackPressed()
+        }
     }
 
     override fun onRequestPermissionsResult(
