@@ -15,6 +15,7 @@ import br.com.trelloapp.firebase.FirestoreClass
 import br.com.trelloapp.model.BoardModel
 import br.com.trelloapp.model.UserModel
 import br.com.trelloapp.utils.Constants.BOARDS_KEY_NAME_COLLECTION
+import br.com.trelloapp.utils.Constants.BOARD_MODEL_ID
 import br.com.trelloapp.utils.Constants.NAME_USER_KEY
 import br.com.trelloapp.utils.Constants.USER_KEY_MODEL
 import com.bumptech.glide.Glide
@@ -39,7 +40,6 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     private lateinit var mUserName: String
 
     private lateinit var boardItemsAdapter: BoardItemsAdapter
-    private var listBoard = ArrayList<BoardModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -171,6 +171,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
                     val intent = Intent(this@MainActivity,TaskListActivity::class.java)
                     intent.putExtra(BOARDS_KEY_NAME_COLLECTION,model)
+                    intent.putExtra(BOARD_MODEL_ID,model.documentId)
                     startActivity(intent)
                 }
 

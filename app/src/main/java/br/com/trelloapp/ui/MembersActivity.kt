@@ -1,7 +1,9 @@
 package br.com.trelloapp.ui
 
 import android.app.Dialog
+import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
@@ -20,21 +22,23 @@ class MembersActivity : BaseActivity() {
 
     private lateinit var mBoard: BoardModel
     private lateinit var mListMembers: ArrayList<UserModel>
+    private var anyChangesMade: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_members)
 
-        if (intent.hasExtra(BOARD_DETAIL)) {
+        if (intent.extras != null) {
 
             mBoard = intent.getParcelableExtra(BOARD_DETAIL)!!
-            if (isNetworkAvailable(this)) {
-                showProgressDialog(resources.getString(R.string.please_wait))
-                FirestoreClass().getAssignedMembersDetails(this, mBoard.assignedTo)
-            } else {
-                showErrorSnackBar("No Internet Connection!")
-            }
 
+        }
+
+        if (isNetworkAvailable(this)) {
+            showProgressDialog(resources.getString(R.string.please_wait))
+            FirestoreClass().getAssignedMembersDetails(this, mBoard.assignedTo)
+        } else {
+            showErrorSnackBar("No Internet Connection!")
         }
 
         setupActionBar()
@@ -55,9 +59,9 @@ class MembersActivity : BaseActivity() {
         rv_members_list.adapter = adapter
     }
 
-    fun getMemberDetails(user:UserModel){
+    fun getMemberDetails(user: UserModel) {
         mBoard.assignedTo.add(user.id)
-        FirestoreClass().postRequestAssignMemberToBoard(this@MembersActivity,mBoard,user)
+        FirestoreClass().postRequestAssignMemberToBoard(this@MembersActivity, mBoard, user)
 
     }
 
@@ -70,6 +74,7 @@ class MembersActivity : BaseActivity() {
             actionBar.title = resources.getString(R.string.members)
         }
         toolbar_members_activity.setNavigationOnClickListener {
+            Log.i("TAGMembers", "Board $mBoard")
             onBackPressed()
         }
     }
@@ -99,9 +104,29 @@ class MembersActivity : BaseActivity() {
                 Toast.makeText(this@MembersActivity, "Email can´t be empty.", Toast.LENGTH_SHORT)
                     .show()
             } else {
+                var isAlreadyMember = false
                 dialog.dismiss()
                 showProgressDialog(resources.getString(R.string.please_wait))
-                FirestoreClass().getRequestMemberDetail(this@MembersActivity,email)
+
+                if (isNetworkAvailable(this@MembersActivity)) {
+                    for (i in mListMembers) {
+                        if (email == i.email) {
+                            isAlreadyMember = true
+                        }
+                    }
+
+                    if (isAlreadyMember) {
+                        hideProgressDialog()
+                        showErrorSnackBar("User already make part of this membership!")
+                    } else {
+                        FirestoreClass().getRequestMemberDetail(this@MembersActivity, email)
+                    }
+
+
+                } else {
+                    hideProgressDialog()
+                    showErrorSnackBar("No Internet Connection!")
+                }
 
             }
 
@@ -114,9 +139,23 @@ class MembersActivity : BaseActivity() {
         dialog.show()
     }
 
-    fun memberAssignedSuccess(user:UserModel){
+    fun memberAssignedSuccess(user: UserModel) {
         hideProgressDialog()
         mListMembers.add(user)
+
+        anyChangesMade = true
+
         setupMembersList(mListMembers)
     }
+
+    override fun onBackPressed() {
+        if (anyChangesMade) {
+            setResult(RESULT_OK)
+        }
+        super.onBackPressed()
+
+
+    }
+
+
 }

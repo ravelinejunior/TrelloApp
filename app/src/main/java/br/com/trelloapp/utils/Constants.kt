@@ -59,6 +59,7 @@ object Constants {
     const val BOARDS_KEY_NAME_COLLECTION = "Boards"
     const val BOARD_IMAGE_REF = "Board_Image"
     const val BOARD_DETAIL = "board_detail"
+    const val BOARD_MODEL_ID = "id"
 
     //Members List
     const val USER_MEMBER_ID = "id"

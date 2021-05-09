@@ -2,6 +2,7 @@ package br.com.trelloapp.ui
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -21,6 +22,7 @@ class TaskListActivity : BaseActivity() {
     private lateinit var mBoardModel: BoardModel
     private lateinit var taskAdapter: TaskItemAdapter
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_task_list)
@@ -32,6 +34,10 @@ class TaskListActivity : BaseActivity() {
         if (isNetworkAvailable(this)) {
             showProgressDialog(resources.getString(R.string.please_wait))
             FirestoreClass().getBoardDetail(this, mBoardModel.documentId)
+        } else {
+            showProgressDialog(resources.getString(R.string.please_wait))
+            boardDetails(mBoardModel)
+            showErrorSnackBar("No Internet Connection")
         }
 
         setupActionBar()
@@ -70,7 +76,10 @@ class TaskListActivity : BaseActivity() {
             taskAdapter = TaskItemAdapter(this, board.taskList)
 
             rv_task_list.adapter = taskAdapter
+
         }
+
+        mBoardModel = board
 
     }
 
@@ -122,7 +131,6 @@ class TaskListActivity : BaseActivity() {
     fun addCardToTaskList(cardName: String, position: Int) {
         if (isNetworkAvailable(this)) {
 
-
             showProgressDialog(resources.getString(R.string.please_wait))
 
             val cardAssignedUsersList: ArrayList<String> = ArrayList()
@@ -154,6 +162,10 @@ class TaskListActivity : BaseActivity() {
         }
     }
 
+    companion object {
+        const val MEMBERS_REQUEST_CODE: Int = 151
+    }
+
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu_members, menu)
         return super.onCreateOptionsMenu(menu)
@@ -162,16 +174,29 @@ class TaskListActivity : BaseActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.members_menu_item_id -> {
-                val intent = Intent(this@TaskListActivity, MembersActivity::class.java)
+                val intent = Intent(this, MembersActivity::class.java)
                 intent.putExtra(BOARD_DETAIL, mBoardModel)
-                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK
-                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-                startActivity(intent)
+                startActivityForResult(intent, MEMBERS_REQUEST_CODE)
+                return true
 
             }
         }
 
         return super.onOptionsItemSelected(item)
     }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == MEMBERS_REQUEST_CODE && resultCode == RESULT_OK) {
+            if (isNetworkAvailable(this)) {
+                showProgressDialog(resources.getString(R.string.please_wait))
+                FirestoreClass().getBoardDetail(this, mBoardModel.documentId)
+            }
+        } else {
+            Log.i("TAGTASKLIST", "nothing changed!")
+        }
+    }
+
 
 }
