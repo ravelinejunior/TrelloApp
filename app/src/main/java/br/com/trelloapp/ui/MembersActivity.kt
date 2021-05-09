@@ -19,6 +19,7 @@ import kotlinx.android.synthetic.main.dialog_search_member.*
 class MembersActivity : BaseActivity() {
 
     private lateinit var mBoard: BoardModel
+    private lateinit var mListMembers: ArrayList<UserModel>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,6 +43,9 @@ class MembersActivity : BaseActivity() {
     }
 
     fun setupMembersList(list: ArrayList<UserModel>) {
+
+        mListMembers = list
+
         hideProgressDialog()
 
         rv_members_list.layoutManager = LinearLayoutManager(this)
@@ -49,6 +53,12 @@ class MembersActivity : BaseActivity() {
 
         val adapter = MembersItemAdapter(this, list)
         rv_members_list.adapter = adapter
+    }
+
+    fun getMemberDetails(user:UserModel){
+        mBoard.assignedTo.add(user.id)
+        FirestoreClass().postRequestAssignMemberToBoard(this@MembersActivity,mBoard,user)
+
     }
 
     private fun setupActionBar() {
@@ -90,6 +100,8 @@ class MembersActivity : BaseActivity() {
                     .show()
             } else {
                 dialog.dismiss()
+                showProgressDialog(resources.getString(R.string.please_wait))
+                FirestoreClass().getRequestMemberDetail(this@MembersActivity,email)
 
             }
 
@@ -100,5 +112,11 @@ class MembersActivity : BaseActivity() {
         }
 
         dialog.show()
+    }
+
+    fun memberAssignedSuccess(user:UserModel){
+        hideProgressDialog()
+        mListMembers.add(user)
+        setupMembersList(mListMembers)
     }
 }

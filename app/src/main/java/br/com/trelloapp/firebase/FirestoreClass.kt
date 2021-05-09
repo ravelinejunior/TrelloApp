@@ -7,7 +7,8 @@ import br.com.trelloapp.model.BoardModel
 import br.com.trelloapp.model.UserModel
 import br.com.trelloapp.ui.*
 import br.com.trelloapp.utils.Constants.ASSIGNED_TO_KEY
-import br.com.trelloapp.utils.Constants.BOARDS_KEY_NAME
+import br.com.trelloapp.utils.Constants.BOARDS_KEY_NAME_COLLECTION
+import br.com.trelloapp.utils.Constants.EMAIL_USER_KEY
 import br.com.trelloapp.utils.Constants.TASK_LIST
 import br.com.trelloapp.utils.Constants.USER_COLLECTION_NAME
 import br.com.trelloapp.utils.Constants.USER_MEMBER_ID
@@ -33,14 +34,14 @@ class FirestoreClass {
     }
 
     private fun loadBoardFromServer(activity: MainActivity) {
-        mFirestore.collection(BOARDS_KEY_NAME)
+        mFirestore.collection(BOARDS_KEY_NAME_COLLECTION)
             .whereArrayContains(ASSIGNED_TO_KEY, getCurrentUserId())
             .get()
             .addOnSuccessListener { document ->
                 val boardList: ArrayList<BoardModel> = ArrayList()
                 for (newBoard in document.documents) {
 
-                    val board: BoardModel= newBoard.toObject(BoardModel::class.java)!!
+                    val board: BoardModel = newBoard.toObject(BoardModel::class.java)!!
                     board.documentId = newBoard.id
                     boardList.add(board)
 
@@ -66,7 +67,7 @@ class FirestoreClass {
 
 
     fun getBoardDetail(activity: TaskListActivity, documentId: String) {
-        mFirestore.collection(BOARDS_KEY_NAME)
+        mFirestore.collection(BOARDS_KEY_NAME_COLLECTION)
             .document(documentId)
             .get()
             .addOnSuccessListener { document ->
@@ -90,7 +91,7 @@ class FirestoreClass {
         val taskListHashMap = HashMap<String, Any>()
         taskListHashMap[TASK_LIST] = board.taskList
 
-        mFirestore.collection(BOARDS_KEY_NAME)
+        mFirestore.collection(BOARDS_KEY_NAME_COLLECTION)
             .document(board.documentId)
             .update(taskListHashMap)
             .addOnSuccessListener {
@@ -148,7 +149,7 @@ class FirestoreClass {
 
     fun createBoard(activity: CreateBoardActivity, boardModel: BoardModel) {
         if (isNetworkAvailable(activity)) {
-            mFirestore.collection(BOARDS_KEY_NAME)
+            mFirestore.collection(BOARDS_KEY_NAME_COLLECTION)
                 .document()
                 .set(boardModel, SetOptions.merge())
                 .addOnSuccessListener {
@@ -177,16 +178,15 @@ class FirestoreClass {
             }
     }
 
-    fun getAssignedMembersDetails(activity: MembersActivity,assignedTo:ArrayList<String>){
+    fun getAssignedMembersDetails(activity: MembersActivity, assignedTo: ArrayList<String>) {
         mFirestore.collection(USER_COLLECTION_NAME)
-            .whereIn(USER_MEMBER_ID,assignedTo)
+            .whereIn(USER_MEMBER_ID, assignedTo)
             .get()
-            .addOnSuccessListener {
-                document ->
+            .addOnSuccessListener { document ->
 
-                val usersList:ArrayList<UserModel> = ArrayList()
+                val usersList: ArrayList<UserModel> = ArrayList()
 
-                for(userFor in document.documents){
+                for (userFor in document.documents) {
                     val user = userFor.toObject(UserModel::class.java)
                     usersList.add(user!!)
                 }
@@ -194,12 +194,52 @@ class FirestoreClass {
                 activity.setupMembersList(usersList)
 
 
-            }.addOnFailureListener {
-                exception ->
+            }.addOnFailureListener { exception ->
                 exception.printStackTrace()
                 activity.hideProgressDialog()
             }
     }
+
+    fun getRequestMemberDetail(activity: MembersActivity, email: String) {
+        mFirestore.collection(USER_COLLECTION_NAME)
+            .whereEqualTo(EMAIL_USER_KEY, email)
+            .get()
+            .addOnSuccessListener { document ->
+                if (document.size() > 0) {
+                    val user = document.documents[0].toObject(UserModel::class.java)
+                    activity.getMemberDetails(user!!)
+                } else {
+                    activity.hideProgressDialog()
+                    activity.showErrorSnackBar("No member founded")
+                }
+            }.addOnFailureListener { exception ->
+                exception.printStackTrace()
+                activity.hideProgressDialog()
+            }
+    }
+
+    fun postRequestAssignMemberToBoard(
+        activity: MembersActivity,
+        board: BoardModel,
+        userInfo: UserModel
+    ) {
+        val assignedToHashMap: HashMap<String, Any> = HashMap()
+        assignedToHashMap[ASSIGNED_TO_KEY] = board.assignedTo
+
+        mFirestore.collection(BOARDS_KEY_NAME_COLLECTION)
+            .document(board.documentId)
+            .update(assignedToHashMap)
+            .addOnSuccessListener {
+
+                activity.memberAssignedSuccess(userInfo)
+
+            }.addOnFailureListener { exception ->
+                exception.printStackTrace()
+                activity.hideProgressDialog()
+            }
+
+    }
+
 
     fun getCurrentUserId(): String {
         val currentUser = mFirebaseAuth.currentUser

@@ -50,15 +50,13 @@ object Constants {
     const val IMAGE_USER_KEY = "image"
     const val NAME_USER_KEY = "name"
     const val MOBILE_USER_KEY = "mobile"
+    const val EMAIL_USER_KEY = "email"
     const val ASSIGNED_TO_KEY = "assignedTo"
-    const val DOCUMENT_ID_KEY = "documentId"
-    const val CREATED_AT_KEY = "createdAt"
-    const val CREATED_AT_DATE_KEY = "createdAtDate"
 
     const val PICK_IMAGE_REQUEST_CODE = 1615
 
     //Boards
-    const val BOARDS_KEY_NAME = "Boards"
+    const val BOARDS_KEY_NAME_COLLECTION = "Boards"
     const val BOARD_IMAGE_REF = "Board_Image"
     const val BOARD_DETAIL = "board_detail"
 

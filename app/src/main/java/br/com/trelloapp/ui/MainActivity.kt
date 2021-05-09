@@ -14,7 +14,7 @@ import br.com.trelloapp.adapter.BoardItemsAdapter
 import br.com.trelloapp.firebase.FirestoreClass
 import br.com.trelloapp.model.BoardModel
 import br.com.trelloapp.model.UserModel
-import br.com.trelloapp.utils.Constants.BOARDS_KEY_NAME
+import br.com.trelloapp.utils.Constants.BOARDS_KEY_NAME_COLLECTION
 import br.com.trelloapp.utils.Constants.NAME_USER_KEY
 import br.com.trelloapp.utils.Constants.USER_KEY_MODEL
 import com.bumptech.glide.Glide
@@ -170,7 +170,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                 override fun onClick(position: Int, model: BoardModel) {
 
                     val intent = Intent(this@MainActivity,TaskListActivity::class.java)
-                    intent.putExtra(BOARDS_KEY_NAME,model)
+                    intent.putExtra(BOARDS_KEY_NAME_COLLECTION,model)
                     startActivity(intent)
                 }
 

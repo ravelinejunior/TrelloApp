@@ -11,7 +11,7 @@ import br.com.trelloapp.firebase.FirestoreClass
 import br.com.trelloapp.model.BoardModel
 import br.com.trelloapp.model.CardModel
 import br.com.trelloapp.model.TaskModel
-import br.com.trelloapp.utils.Constants.BOARDS_KEY_NAME
+import br.com.trelloapp.utils.Constants.BOARDS_KEY_NAME_COLLECTION
 import br.com.trelloapp.utils.Constants.BOARD_DETAIL
 import br.com.trelloapp.utils.Constants.isNetworkAvailable
 import kotlinx.android.synthetic.main.activity_task_list.*
@@ -26,7 +26,7 @@ class TaskListActivity : BaseActivity() {
         setContentView(R.layout.activity_task_list)
 
         if (intent.extras != null) {
-            mBoardModel = intent.getParcelableExtra(BOARDS_KEY_NAME)!!
+            mBoardModel = intent.getParcelableExtra(BOARDS_KEY_NAME_COLLECTION)!!
         }
 
         if (isNetworkAvailable(this)) {
