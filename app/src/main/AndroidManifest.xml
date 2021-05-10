@@ -16,6 +16,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.TrelloApp.NoActionBar">
         <activity
+            android:name=".ui.CardDetailsActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.TrelloApp.NoActionBar" />
+        <activity
             android:name=".ui.MembersActivity"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.TrelloApp.NoActionBar" />

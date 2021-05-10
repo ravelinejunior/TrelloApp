@@ -21,6 +21,7 @@ class TaskListActivity : BaseActivity() {
 
     private lateinit var mBoardModel: BoardModel
     private lateinit var taskAdapter: TaskItemAdapter
+    private var cardModelList: ArrayList<CardModel>? = null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -59,27 +60,22 @@ class TaskListActivity : BaseActivity() {
     }
 
     fun boardDetails(board: BoardModel) {
+        mBoardModel = board
         hideProgressDialog()
 
-        if (isNetworkAvailable(this)) {
+        val addTaskList = TaskModel(
+            resources.getString(R.string.add_list)
+        )
 
-            val addTaskList = TaskModel(
-                resources.getString(R.string.add_list)
-            )
+        board.taskList.add(addTaskList)
 
-            board.taskList.add(addTaskList)
+        rv_task_list.layoutManager =
+            LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+        rv_task_list.setHasFixedSize(true)
 
-            rv_task_list.layoutManager =
-                LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
-            rv_task_list.setHasFixedSize(true)
+        taskAdapter = TaskItemAdapter(this, board.taskList)
 
-            taskAdapter = TaskItemAdapter(this, board.taskList)
-
-            rv_task_list.adapter = taskAdapter
-
-        }
-
-        mBoardModel = board
+        rv_task_list.adapter = taskAdapter
 
     }
 
@@ -98,7 +94,10 @@ class TaskListActivity : BaseActivity() {
         if (isNetworkAvailable(this)) {
             val task =
                 TaskModel(taskListName, FirestoreClass().getCurrentUserId(), getCurrentDate())
-            mBoardModel.taskList.add(position, task)
+
+            mBoardModel.taskList.add(0, task)
+            mBoardModel.taskList.removeAt(mBoardModel.taskList.size - 1)
+            // mBoardModel.taskList.add(position, task)
 
             showProgressDialog(resources.getString(R.string.please_wait))
 
@@ -112,10 +111,11 @@ class TaskListActivity : BaseActivity() {
             val task = TaskModel(listName, model.createdBy, model.createdAt)
 
             mBoardModel.taskList[position] = task
+            mBoardModel.taskList.removeAt(mBoardModel.taskList.size - 1)
 
             showProgressDialog(resources.getString(R.string.please_wait))
 
-            FirestoreClass().addUpdateTaskList(this, mBoardModel)
+            FirestoreClass().addUpdateTaskList(this, mBoardModel, true)
         }
 
     }
@@ -123,8 +123,14 @@ class TaskListActivity : BaseActivity() {
     fun deleteTaskList(position: Int) {
         if (isNetworkAvailable(this)) {
             showProgressDialog(resources.getString(R.string.please_wait))
+
             mBoardModel.taskList.removeAt(position)
+            mBoardModel.taskList.removeAt(mBoardModel.taskList.size - 1)
+
+            hideProgressDialog()
             FirestoreClass().addUpdateTaskList(this, mBoardModel)
+
+
         }
     }
 
@@ -132,6 +138,7 @@ class TaskListActivity : BaseActivity() {
         if (isNetworkAvailable(this)) {
 
             showProgressDialog(resources.getString(R.string.please_wait))
+            mBoardModel.taskList.removeAt(mBoardModel.taskList.size - 1)
 
             val cardAssignedUsersList: ArrayList<String> = ArrayList()
 
@@ -154,6 +161,8 @@ class TaskListActivity : BaseActivity() {
                     mBoardModel.taskList[position].createdAt,
                     cardList
                 )
+
+            cardModelList = cardList
 
             mBoardModel.taskList[position] = task
 
@@ -196,6 +205,12 @@ class TaskListActivity : BaseActivity() {
         } else {
             Log.i("TAGTASKLIST", "nothing changed!")
         }
+    }
+
+    fun cardDetails(taskListPosition: Int, cardPosition: Int) {
+        val intent = Intent(this@TaskListActivity, CardDetailsActivity::class.java)
+        intent.putExtra(BOARDS_KEY_NAME_COLLECTION, mBoardModel)
+        startActivity(intent)
     }
 
 

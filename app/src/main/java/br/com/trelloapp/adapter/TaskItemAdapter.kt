@@ -12,6 +12,7 @@ import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import br.com.trelloapp.R
+import br.com.trelloapp.model.CardModel
 import br.com.trelloapp.model.TaskModel
 import br.com.trelloapp.ui.TaskListActivity
 import kotlinx.android.synthetic.main.item_task_adapter.view.*
@@ -135,6 +136,16 @@ class TaskItemAdapter(private val context: Context, private var listTask: ArrayL
 
         val adapter = CardListItemsAdapter(context, model.cards)
         holder.itemView.rv_item_card_list.adapter = adapter
+
+        //card list with details
+        adapter.setOnClickListener(object :CardListItemsAdapter.OnClickListener{
+            override fun onClick(cardPosition: Int, card: CardModel) {
+                if(context is TaskListActivity){
+                    context.cardDetails(position,cardPosition)
+                }
+            }
+
+        })
     }
 
     private fun Int.toDP(): Int = (this / Resources.getSystem().displayMetrics.density).toInt()

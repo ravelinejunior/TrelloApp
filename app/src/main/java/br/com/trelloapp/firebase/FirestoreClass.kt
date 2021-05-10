@@ -87,7 +87,7 @@ class FirestoreClass {
 
     }
 
-    fun addUpdateTaskList(activity: TaskListActivity, board: BoardModel) {
+    fun addUpdateTaskList(activity: TaskListActivity, board: BoardModel,isUpdate:Boolean = false) {
         val taskListHashMap = HashMap<String, Any>()
         taskListHashMap[TASK_LIST] = board.taskList
 

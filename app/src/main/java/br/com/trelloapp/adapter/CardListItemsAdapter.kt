@@ -31,6 +31,12 @@ open class CardListItemsAdapter(
 
         holder.itemView.tv_card_name.text = model.name
 
+        holder.itemView.setOnClickListener {
+            if(onClickListener != null){
+                onClickListener!!.onClick(position,model)
+            }
+        }
+
     }
 
     fun setOnClickListener(onClickListener: OnClickListener) {
