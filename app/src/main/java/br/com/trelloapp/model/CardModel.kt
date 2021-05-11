@@ -9,13 +9,15 @@ data class CardModel(
     val name: String = "",
     val createdBy: String = "",
     val createAt: String = "",
-    val assignedTo: ArrayList<String> = ArrayList()
+    val assignedTo: ArrayList<String> = ArrayList(),
+    var labelColor: String = ""
 ) : Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readString()!!,
         parcel.readString()!!,
         parcel.readString()!!,
-        parcel.createStringArrayList()!!
+        parcel.createStringArrayList()!!,
+        parcel.readString()!!
     )
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
@@ -23,6 +25,7 @@ data class CardModel(
         parcel.writeString(createdBy)
         parcel.writeString(createAt)
         parcel.writeStringList(assignedTo)
+        parcel.writeString(labelColor)
     }
 
     override fun describeContents(): Int = 0

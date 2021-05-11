@@ -2,10 +2,10 @@ package br.com.trelloapp.ui
 
 import android.app.AlertDialog
 import android.app.Dialog
+import android.graphics.Color
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View
 import br.com.trelloapp.R
 import br.com.trelloapp.firebase.FirestoreClass
 import br.com.trelloapp.model.BoardModel
@@ -14,10 +14,12 @@ import br.com.trelloapp.model.TaskModel
 import br.com.trelloapp.utils.Constants.BOARDS_KEY_NAME_COLLECTION
 import br.com.trelloapp.utils.Constants.CARD_LIST_ITEM_POSITION
 import br.com.trelloapp.utils.Constants.TASK_LIST_ITEM_POSITION
+import br.com.trelloapp.utils.LabelColorDialog
 import kotlinx.android.synthetic.main.activity_card_details.*
 
 class CardDetailsActivity : BaseActivity() {
 
+    private var mSelectedColor: String = ""
     private lateinit var mBoardModel: BoardModel
     private var mCardPosition: Int = -1
     private var mTaskItemPosition: Int = -1
@@ -34,13 +36,17 @@ class CardDetailsActivity : BaseActivity() {
         setupActionBar()
         initFields()
 
-        btn_update_card_details.setOnClickListener{
+        btn_update_card_details.setOnClickListener {
             val name = et_name_card_details.text.toString()
             if (name.isNotEmpty()) {
                 updateCardDetails()
             } else {
                 showErrorSnackBar("Name can´t be empty!")
             }
+        }
+
+        tv_select_label_color_card_details.setOnClickListener {
+            labelColorsDialog()
         }
     }
 
@@ -80,11 +86,13 @@ class CardDetailsActivity : BaseActivity() {
             name,
             mBoardModel.taskList[mTaskItemPosition].cards[mCardPosition].createdBy,
             mBoardModel.taskList[mTaskItemPosition].cards[mCardPosition].createAt,
-            mBoardModel.taskList[mTaskItemPosition].cards[mCardPosition].assignedTo
+            mBoardModel.taskList[mTaskItemPosition].cards[mCardPosition].assignedTo,
+            mSelectedColor
 
         )
 
         mBoardModel.taskList[mTaskItemPosition].cards[mCardPosition] = card
+        mBoardModel.taskList.removeAt(mBoardModel.taskList.size - 1)
 
         showProgressDialog(resources.getString(R.string.please_wait))
         FirestoreClass().addUpdateTaskList(this, mBoardModel)
@@ -106,6 +114,43 @@ class CardDetailsActivity : BaseActivity() {
         showProgressDialog(resources.getString(R.string.please_wait))
         FirestoreClass().addUpdateTaskList(this, mBoardModel)
 
+    }
+
+    private fun colorsList(): ArrayList<String> {
+        val colorsList: ArrayList<String> = ArrayList()
+
+        colorsList.add("#43C86F")
+        colorsList.add("#0C90F1")
+        colorsList.add("#F72400")
+        colorsList.add("#7A8089")
+        colorsList.add("#D57C1D")
+        colorsList.add("#770000")
+        colorsList.add("#0022F8")
+
+        return colorsList
+    }
+
+    private fun setColor() {
+        tv_select_label_color_card_details.text = ""
+        tv_select_label_color_card_details.setBackgroundColor(Color.parseColor(mSelectedColor))
+    }
+
+    private fun labelColorsDialog() {
+        val colorList: ArrayList<String> = colorsList()
+
+        val listDialog = object : LabelColorDialog(
+            this,
+            colorList,
+            resources.getString(R.string.str_select_label_color)
+        ) {
+            override fun onItemSelected(color: String) {
+                mSelectedColor = color
+                setColor()
+            }
+
+        }
+
+        listDialog.show()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -138,7 +183,5 @@ class CardDetailsActivity : BaseActivity() {
         dialog.setCancelable(false)
         dialog.show()
     }
-
-
 
 }
