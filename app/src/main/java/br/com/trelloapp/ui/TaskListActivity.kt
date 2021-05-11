@@ -12,8 +12,10 @@ import br.com.trelloapp.firebase.FirestoreClass
 import br.com.trelloapp.model.BoardModel
 import br.com.trelloapp.model.CardModel
 import br.com.trelloapp.model.TaskModel
+import br.com.trelloapp.model.UserModel
 import br.com.trelloapp.utils.Constants.BOARDS_KEY_NAME_COLLECTION
 import br.com.trelloapp.utils.Constants.BOARD_DETAIL
+import br.com.trelloapp.utils.Constants.BOARD_MEMBERS_LIST
 import br.com.trelloapp.utils.Constants.CARD_LIST_ITEM_POSITION
 import br.com.trelloapp.utils.Constants.TASK_LIST_ITEM_POSITION
 import br.com.trelloapp.utils.Constants.isNetworkAvailable
@@ -24,7 +26,7 @@ class TaskListActivity : BaseActivity() {
     private lateinit var mBoardModel: BoardModel
     private lateinit var taskAdapter: TaskItemAdapter
     private var cardModelList: ArrayList<CardModel>? = null
-
+    private lateinit var mAssignedMemberList: ArrayList<UserModel>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -78,6 +80,10 @@ class TaskListActivity : BaseActivity() {
         taskAdapter = TaskItemAdapter(this, board.taskList)
 
         rv_task_list.adapter = taskAdapter
+
+        //call the function to get members of a card
+        showProgressDialog(resources.getString(R.string.please_wait))
+        FirestoreClass().getAssignedMembersDetails(this, mBoardModel.assignedTo)
 
     }
 
@@ -196,7 +202,8 @@ class TaskListActivity : BaseActivity() {
         super.onActivityResult(requestCode, resultCode, data)
 
         if ((requestCode == MEMBERS_REQUEST_CODE || requestCode == CARD_DETAILS_REQUEST_CODE)
-            && resultCode == RESULT_OK) {
+            && resultCode == RESULT_OK
+        ) {
             if (isNetworkAvailable(this)) {
                 showProgressDialog(resources.getString(R.string.please_wait))
                 FirestoreClass().getBoardDetail(this, mBoardModel.documentId)
@@ -207,12 +214,21 @@ class TaskListActivity : BaseActivity() {
     }
 
     fun cardDetails(taskListPosition: Int, cardPosition: Int) {
+
         val intent = Intent(this@TaskListActivity, CardDetailsActivity::class.java)
+
         intent.putExtra(BOARDS_KEY_NAME_COLLECTION, mBoardModel)
         intent.putExtra(TASK_LIST_ITEM_POSITION, taskListPosition)
         intent.putExtra(CARD_LIST_ITEM_POSITION, cardPosition)
+        intent.putExtra(BOARD_MEMBERS_LIST,mAssignedMemberList)
 
         startActivityForResult(intent, CARD_DETAILS_REQUEST_CODE)
+    }
+
+    fun boardMembersDetailsList(list: ArrayList<UserModel>) {
+        mAssignedMemberList = list
+
+        hideProgressDialog()
     }
 
     companion object {

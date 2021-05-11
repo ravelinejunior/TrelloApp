@@ -69,4 +69,7 @@ object Constants {
     const val TASK_LIST_ITEM_POSITION = "task_list_item_position"
     const val CARD_LIST_ITEM_POSITION = "card_list_item_position"
 
+    //Board Member
+    const val BOARD_MEMBERS_LIST: String = "board_member_list"
+
 }

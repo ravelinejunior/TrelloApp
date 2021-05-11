@@ -11,7 +11,9 @@ import br.com.trelloapp.firebase.FirestoreClass
 import br.com.trelloapp.model.BoardModel
 import br.com.trelloapp.model.CardModel
 import br.com.trelloapp.model.TaskModel
+import br.com.trelloapp.model.UserModel
 import br.com.trelloapp.utils.Constants.BOARDS_KEY_NAME_COLLECTION
+import br.com.trelloapp.utils.Constants.BOARD_MEMBERS_LIST
 import br.com.trelloapp.utils.Constants.CARD_LIST_ITEM_POSITION
 import br.com.trelloapp.utils.Constants.TASK_LIST_ITEM_POSITION
 import br.com.trelloapp.utils.LabelColorDialog
@@ -23,6 +25,7 @@ class CardDetailsActivity : BaseActivity() {
     private lateinit var mBoardModel: BoardModel
     private var mCardPosition: Int = -1
     private var mTaskItemPosition: Int = -1
+    private lateinit var mListMembers: ArrayList<UserModel>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,6 +35,7 @@ class CardDetailsActivity : BaseActivity() {
             mBoardModel = intent.getParcelableExtra(BOARDS_KEY_NAME_COLLECTION)!!
             mCardPosition = intent.getIntExtra(CARD_LIST_ITEM_POSITION, -1)
             mTaskItemPosition = intent.getIntExtra(TASK_LIST_ITEM_POSITION, -1)
+            mListMembers = intent.getParcelableArrayListExtra(BOARD_MEMBERS_LIST)!!
         }
         setupActionBar()
         initFields()
@@ -51,7 +55,7 @@ class CardDetailsActivity : BaseActivity() {
 
         mSelectedColor = mBoardModel.taskList[mTaskItemPosition].cards[mCardPosition].labelColor
 
-        if(mSelectedColor.isNotEmpty()){
+        if (mSelectedColor.isNotEmpty()) {
             setColor()
         }
     }

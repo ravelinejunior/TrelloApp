@@ -188,7 +188,7 @@ class FirestoreClass {
             }
     }
 
-    fun getAssignedMembersDetails(activity: MembersActivity, assignedTo: ArrayList<String>) {
+    fun getAssignedMembersDetails(activity: Activity, assignedTo: ArrayList<String>) {
         mFirestore.collection(USER_COLLECTION_NAME)
             .whereIn(USER_MEMBER_ID, assignedTo)
             .get()
@@ -201,12 +201,21 @@ class FirestoreClass {
                     usersList.add(user!!)
                 }
 
-                activity.setupMembersList(usersList)
+                if (activity is MembersActivity)
+                    activity.setupMembersList(usersList)
+                else if (activity is TaskListActivity) {
+                    activity.boardMembersDetailsList(usersList)
+                }
 
 
             }.addOnFailureListener { exception ->
                 exception.printStackTrace()
-                activity.hideProgressDialog()
+
+                if (activity is MembersActivity)
+                    activity.hideProgressDialog()
+                else if (activity is MembersActivity) {
+                    activity.hideProgressDialog()
+                }
             }
     }
 
