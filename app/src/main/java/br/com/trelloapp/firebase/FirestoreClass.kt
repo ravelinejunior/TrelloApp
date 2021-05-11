@@ -87,7 +87,8 @@ class FirestoreClass {
 
     }
 
-    fun addUpdateTaskList(activity: TaskListActivity, board: BoardModel,isUpdate:Boolean = false) {
+    fun addUpdateTaskList(activity: Activity, board: BoardModel, isUpdate: Boolean = false) {
+
         val taskListHashMap = HashMap<String, Any>()
         taskListHashMap[TASK_LIST] = board.taskList
 
@@ -95,9 +96,18 @@ class FirestoreClass {
             .document(board.documentId)
             .update(taskListHashMap)
             .addOnSuccessListener {
-                activity.addUpdateTaskListBoard()
+
+                if (activity is TaskListActivity) {
+                    activity.addUpdateTaskListBoard()
+                } else if (activity is CardDetailsActivity) {
+                    activity.addUpdateTaskList(activity)
+                }
+
             }.addOnFailureListener { exception ->
-                activity.hideProgressDialog()
+                if (activity is TaskListActivity)
+                    activity.hideProgressDialog()
+                else if (activity is CardDetailsActivity)
+                    activity.hideProgressDialog()
                 Log.e(
                     activity.javaClass.simpleName,
                     "Error loading boards:${exception.printStackTrace()}"
