@@ -9,7 +9,7 @@ data class TaskModel(
     var title: String = "",
     val createdBy: String = "",
     val createdAt: String = "",
-    val cards:ArrayList<CardModel> = ArrayList()
+    var cards:ArrayList<CardModel> = ArrayList()
 ) : Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readString()!!,

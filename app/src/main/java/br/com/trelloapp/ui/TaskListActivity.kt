@@ -14,6 +14,8 @@ import br.com.trelloapp.model.CardModel
 import br.com.trelloapp.model.TaskModel
 import br.com.trelloapp.utils.Constants.BOARDS_KEY_NAME_COLLECTION
 import br.com.trelloapp.utils.Constants.BOARD_DETAIL
+import br.com.trelloapp.utils.Constants.CARD_LIST_ITEM_POSITION
+import br.com.trelloapp.utils.Constants.TASK_LIST_ITEM_POSITION
 import br.com.trelloapp.utils.Constants.isNetworkAvailable
 import kotlinx.android.synthetic.main.activity_task_list.*
 
@@ -108,7 +110,7 @@ class TaskListActivity : BaseActivity() {
 
     fun updateTaskList(position: Int, listName: String, model: TaskModel) {
         if (isNetworkAvailable(this)) {
-            val task = TaskModel(listName, model.createdBy, model.createdAt)
+            val task = TaskModel(listName, model.createdBy, model.createdAt,model.cards)
 
             mBoardModel.taskList[position] = task
             mBoardModel.taskList.removeAt(mBoardModel.taskList.size - 1)
@@ -210,6 +212,9 @@ class TaskListActivity : BaseActivity() {
     fun cardDetails(taskListPosition: Int, cardPosition: Int) {
         val intent = Intent(this@TaskListActivity, CardDetailsActivity::class.java)
         intent.putExtra(BOARDS_KEY_NAME_COLLECTION, mBoardModel)
+        intent.putExtra(TASK_LIST_ITEM_POSITION,taskListPosition)
+        intent.putExtra(CARD_LIST_ITEM_POSITION,cardPosition)
+
         startActivity(intent)
     }
 

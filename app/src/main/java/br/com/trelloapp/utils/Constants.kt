@@ -66,5 +66,7 @@ object Constants {
 
     //Task
     const val TASK_LIST: String = "taskList"
+    const val TASK_LIST_ITEM_POSITION = "task_list_item_position"
+    const val CARD_LIST_ITEM_POSITION = "card_list_item_position"
 
 }
