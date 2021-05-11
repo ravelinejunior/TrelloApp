@@ -110,7 +110,7 @@ class TaskListActivity : BaseActivity() {
 
     fun updateTaskList(position: Int, listName: String, model: TaskModel) {
         if (isNetworkAvailable(this)) {
-            val task = TaskModel(listName, model.createdBy, model.createdAt,model.cards)
+            val task = TaskModel(listName, model.createdBy, model.createdAt, model.cards)
 
             mBoardModel.taskList[position] = task
             mBoardModel.taskList.removeAt(mBoardModel.taskList.size - 1)
@@ -173,10 +173,6 @@ class TaskListActivity : BaseActivity() {
         }
     }
 
-    companion object {
-        const val MEMBERS_REQUEST_CODE: Int = 151
-    }
-
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu_members, menu)
         return super.onCreateOptionsMenu(menu)
@@ -199,7 +195,8 @@ class TaskListActivity : BaseActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        if (requestCode == MEMBERS_REQUEST_CODE && resultCode == RESULT_OK) {
+        if ((requestCode == MEMBERS_REQUEST_CODE || requestCode == CARD_DETAILS_REQUEST_CODE)
+            && resultCode == RESULT_OK) {
             if (isNetworkAvailable(this)) {
                 showProgressDialog(resources.getString(R.string.please_wait))
                 FirestoreClass().getBoardDetail(this, mBoardModel.documentId)
@@ -212,11 +209,14 @@ class TaskListActivity : BaseActivity() {
     fun cardDetails(taskListPosition: Int, cardPosition: Int) {
         val intent = Intent(this@TaskListActivity, CardDetailsActivity::class.java)
         intent.putExtra(BOARDS_KEY_NAME_COLLECTION, mBoardModel)
-        intent.putExtra(TASK_LIST_ITEM_POSITION,taskListPosition)
-        intent.putExtra(CARD_LIST_ITEM_POSITION,cardPosition)
+        intent.putExtra(TASK_LIST_ITEM_POSITION, taskListPosition)
+        intent.putExtra(CARD_LIST_ITEM_POSITION, cardPosition)
 
-        startActivity(intent)
+        startActivityForResult(intent, CARD_DETAILS_REQUEST_CODE)
     }
 
-
+    companion object {
+        const val MEMBERS_REQUEST_CODE: Int = 151
+        const val CARD_DETAILS_REQUEST_CODE: Int = 56153
+    }
 }

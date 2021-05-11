@@ -52,6 +52,7 @@
                         android:layout_height="wrap_content"
                         android:background="@color/white"
                         android:hint="@string/hint_card_name"
+                        android:textColor="@color/black"
                         android:inputType="text"
                         android:textSize="@dimen/et_text_size"
                         tools:text="Test" />

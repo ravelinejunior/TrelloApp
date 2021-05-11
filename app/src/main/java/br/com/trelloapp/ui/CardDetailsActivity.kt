@@ -1,6 +1,7 @@
 package br.com.trelloapp.ui
 
 import android.os.Bundle
+import android.view.Menu
 import br.com.trelloapp.R
 import br.com.trelloapp.model.BoardModel
 import br.com.trelloapp.utils.Constants.BOARDS_KEY_NAME_COLLECTION
@@ -44,6 +45,15 @@ class CardDetailsActivity : BaseActivity() {
 
     private fun initFields() {
         et_name_card_details.setText(mBoardModel.taskList[mTaskItemPosition].cards[mCardPosition].name)
-        tv_select_due_date_card_details.text =mBoardModel.taskList[mTaskItemPosition].cards[mCardPosition].createAt
+        et_name_card_details.setSelection(et_name_card_details.text.toString().length)
+        tv_select_due_date_card_details.text =
+            mBoardModel.taskList[mTaskItemPosition].cards[mCardPosition].createAt
     }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_delete_card, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+
 }
