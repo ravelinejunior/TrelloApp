@@ -7,6 +7,8 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import br.com.trelloapp.R
+import br.com.trelloapp.dialog.LabelColorDialog
+import br.com.trelloapp.dialog.MemberListDialog
 import br.com.trelloapp.firebase.FirestoreClass
 import br.com.trelloapp.model.BoardModel
 import br.com.trelloapp.model.CardModel
@@ -16,7 +18,6 @@ import br.com.trelloapp.utils.Constants.BOARDS_KEY_NAME_COLLECTION
 import br.com.trelloapp.utils.Constants.BOARD_MEMBERS_LIST
 import br.com.trelloapp.utils.Constants.CARD_LIST_ITEM_POSITION
 import br.com.trelloapp.utils.Constants.TASK_LIST_ITEM_POSITION
-import br.com.trelloapp.utils.LabelColorDialog
 import kotlinx.android.synthetic.main.activity_card_details.*
 
 class CardDetailsActivity : BaseActivity() {
@@ -51,6 +52,10 @@ class CardDetailsActivity : BaseActivity() {
 
         tv_select_label_color_card_details.setOnClickListener {
             labelColorsDialog()
+        }
+
+        tv_select_members_card_details.setOnClickListener {
+            memberListDialog()
         }
 
         mSelectedColor = mBoardModel.taskList[mTaskItemPosition].cards[mCardPosition].labelColor
@@ -123,6 +128,36 @@ class CardDetailsActivity : BaseActivity() {
 
         showProgressDialog(resources.getString(R.string.please_wait))
         FirestoreClass().addUpdateTaskList(this, mBoardModel)
+
+    }
+
+    private fun memberListDialog() {
+        val cardAssignedMemberList =
+            mBoardModel.taskList[mTaskItemPosition].cards[mCardPosition].assignedTo
+
+        if (cardAssignedMemberList.size > 0) {
+            for (i in mListMembers.indices) {
+                for (j in cardAssignedMemberList) {
+                    if (mListMembers[i].id == j) {
+                        mListMembers[i].selected = true
+                    }
+                }
+            }
+        } else {
+            for (i in mListMembers.indices) {
+                mListMembers[i].selected = false
+            }
+        }
+
+        val listDialog = object :
+            MemberListDialog(this, resources.getString(R.string.str_select_member), mListMembers) {
+            override fun onItemSelected(user: UserModel, action: String) {
+
+            }
+        }
+
+        listDialog.show()
+
 
     }
 

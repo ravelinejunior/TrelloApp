@@ -71,5 +71,7 @@ object Constants {
 
     //Board Member
     const val BOARD_MEMBERS_LIST: String = "board_member_list"
+    const val SELECT = "select"
+    const val UNSELECT = "unSelect"
 
 }

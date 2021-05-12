@@ -6,6 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:isScrollContainer="true"
     tools:context=".ui.CardDetailsActivity">
 
     <com.google.android.material.appbar.AppBarLayout
@@ -52,8 +53,8 @@
                         android:layout_height="wrap_content"
                         android:background="@color/white"
                         android:hint="@string/hint_card_name"
-                        android:textColor="@color/black"
                         android:inputType="text"
+                        android:textColor="@color/black"
                         android:textSize="@dimen/et_text_size"
                         tools:text="Test" />
                 </com.google.android.material.textfield.TextInputLayout>
@@ -106,6 +107,16 @@
                     android:padding="@dimen/card_details_value_padding"
                     android:text="@string/select_members"
                     android:textColor="@color/primary_text_color" />
+
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rv_selected_members_list_id"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/card_details_value_marginTop"
+                    android:visibility="gone"
+                    tools:itemCount="5"
+                    tools:visibility="visible" />
 
                 <TextView
                     android:layout_width="match_parent"

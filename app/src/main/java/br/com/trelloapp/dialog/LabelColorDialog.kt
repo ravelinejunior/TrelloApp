@@ -1,4 +1,4 @@
-package br.com.trelloapp.utils
+package br.com.trelloapp.dialog
 
 import android.app.Dialog
 import android.content.Context

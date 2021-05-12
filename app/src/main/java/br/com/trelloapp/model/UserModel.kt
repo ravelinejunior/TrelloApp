@@ -1,5 +1,6 @@
 package br.com.trelloapp.model
 
+import android.annotation.SuppressLint
 import android.os.Parcel
 import android.os.Parcelable
 
@@ -9,8 +10,10 @@ data class UserModel(
     val email: String = "",
     val image: String = "",
     val mobile: Long = 0,
-    val fcmToken: String = ""
+    val fcmToken: String = "",
+    var selected: Boolean = false
 ) : Parcelable {
+    @SuppressLint("NewApi")
     constructor(parcel: Parcel) : this(
         parcel.readString()!!,
         parcel.readString()!!,
@@ -18,7 +21,9 @@ data class UserModel(
         parcel.readString()!!,
         parcel.readLong(),
         parcel.readString()!!
+
     )
+
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeString(id)
         parcel.writeString(name)
@@ -26,6 +31,7 @@ data class UserModel(
         parcel.writeString(image)
         parcel.writeLong(mobile)
         parcel.writeString(fcmToken)
+
     }
 
     override fun describeContents() = 0

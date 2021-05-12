@@ -8,6 +8,8 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import br.com.trelloapp.R
 import br.com.trelloapp.model.UserModel
+import br.com.trelloapp.utils.Constants.SELECT
+import br.com.trelloapp.utils.Constants.UNSELECT
 import com.bumptech.glide.Glide
 import kotlinx.android.synthetic.main.item_member_adapter.view.*
 
@@ -16,7 +18,7 @@ open class MembersItemAdapter(
     private val memberList: ArrayList<UserModel>
 ) : RecyclerView.Adapter<MembersItemAdapter.MyViewHolder>() {
 
-    private lateinit var onClickListener: OnClickLister
+    private var onClickListener: OnClickListener? = null
 
     class MyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
 
@@ -37,15 +39,31 @@ open class MembersItemAdapter(
         holder.itemView.tv_member_name.text = model.name
         holder.itemView.tv_member_email.text = model.email
         holder.itemView.tv_member_mobile_id.text = model.mobile.toString()
+
+        if(model.selected){
+            holder.itemView.iv_selected_item_member.visibility = View.VISIBLE
+        }else{
+            holder.itemView.iv_selected_item_member.visibility = View.GONE
+        }
+
+        holder.itemView.setOnClickListener {
+            if(onClickListener != null){
+                if(model.selected){
+                    onClickListener?.onClick(position,model,UNSELECT)
+                }else{
+                    onClickListener?.onClick(position,model,SELECT)
+                }
+            }
+        }
     }
 
     override fun getItemCount(): Int = memberList.size
 
-    interface OnClickLister {
-        fun onClick(position: Int, user: UserModel)
+    interface OnClickListener {
+        fun onClick(position: Int, user: UserModel,action:String)
     }
 
-    fun setOnClickListener(onClickLister: OnClickLister) {
-        this.onClickListener = onClickLister
+    fun setOnClickListener(onClickListener: OnClickListener) {
+        this.onClickListener = onClickListener
     }
 }
