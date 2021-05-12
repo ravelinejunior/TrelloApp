@@ -17,6 +17,7 @@ import br.com.trelloapp.model.*
 import br.com.trelloapp.utils.Constants.BOARDS_KEY_NAME_COLLECTION
 import br.com.trelloapp.utils.Constants.BOARD_MEMBERS_LIST
 import br.com.trelloapp.utils.Constants.CARD_LIST_ITEM_POSITION
+import br.com.trelloapp.utils.Constants.SELECT
 import br.com.trelloapp.utils.Constants.TASK_LIST_ITEM_POSITION
 import kotlinx.android.synthetic.main.activity_card_details.*
 
@@ -63,6 +64,8 @@ class CardDetailsActivity : BaseActivity() {
         if (mSelectedColor.isNotEmpty()) {
             setColor()
         }
+
+        setUpSelectedMembersList()
     }
 
     private fun setupActionBar() {
@@ -107,7 +110,9 @@ class CardDetailsActivity : BaseActivity() {
         )
 
         mBoardModel.taskList[mTaskItemPosition].cards[mCardPosition] = card
-        mBoardModel.taskList.removeAt(mBoardModel.taskList.size - 1)
+
+        val taskList: ArrayList<TaskModel> = mBoardModel.taskList
+        taskList.removeAt(taskList.size - 1)
 
         showProgressDialog(resources.getString(R.string.please_wait))
         FirestoreClass().addUpdateTaskList(this, mBoardModel)
@@ -152,7 +157,33 @@ class CardDetailsActivity : BaseActivity() {
         val listDialog = object :
             MemberListDialog(this, resources.getString(R.string.str_select_member), mListMembers) {
             override fun onItemSelected(user: UserModel, action: String) {
+                //verify if the action is select or unselect
+                if (action == SELECT) {
+                    //if the user is already added, do something , else add the user to the card
+                    if (!mBoardModel.taskList[mTaskItemPosition]
+                            .cards[mCardPosition]
+                            .assignedTo.contains(user.id)
+                    ) {
+                        //add the user
+                        mBoardModel.taskList[mTaskItemPosition]
+                            .cards[mCardPosition]
+                            .assignedTo.add(user.id)
+                    }
 
+                } else {
+                    //remove from the list
+                    mBoardModel.taskList[mTaskItemPosition]
+                        .cards[mCardPosition]
+                        .assignedTo.remove(user.id)
+
+                    //go through all the users and unselect the user
+                    for (i in mListMembers.indices) {
+                        mListMembers[i].selected = mListMembers[i].id != user.id
+                    }
+                }
+
+                //refresh the screen
+                setUpSelectedMembersList()
             }
         }
 
@@ -161,7 +192,7 @@ class CardDetailsActivity : BaseActivity() {
 
     }
 
-    private fun seteUpSelectedMembersList() {
+    private fun setUpSelectedMembersList() {
         val cardAssignedMembersList =
             mBoardModel.taskList[mTaskItemPosition].cards[mCardPosition].assignedTo
 
@@ -170,38 +201,37 @@ class CardDetailsActivity : BaseActivity() {
         for (i in mListMembers.indices) {
             for (j in cardAssignedMembersList) {
                 if (mListMembers[i].id == j) {
-                   val selectedMember  = SelectedMembersModel(
-                       mListMembers[i].id,
-                       mListMembers[i].image
-                   )
+                    val selectedMember = SelectedMembersModel(
+                        mListMembers[i].id,
+                        mListMembers[i].image
+                    )
                     selectedMembersList.add(selectedMember)
                 }
             }
         }
 
-        if(selectedMembersList.size > 0){
-            selectedMembersList.add(SelectedMembersModel("",""))
+        if (selectedMembersList.size > 0) {
+            selectedMembersList.add(SelectedMembersModel("", ""))
             tv_select_members_card_details.visibility = View.GONE
             rv_selected_members_list_id.visibility = View.VISIBLE
 
-            rv_selected_members_list_id.layoutManager = GridLayoutManager(this,6)
+            rv_selected_members_list_id.layoutManager = GridLayoutManager(this, 6)
             rv_selected_members_list_id.setHasFixedSize(true)
 
-            val adapter = CardMemberListAdapter(this,selectedMembersList)
+            val adapter = CardMemberListAdapter(this, selectedMembersList)
 
             rv_selected_members_list_id.adapter = adapter
 
-            adapter.setOnClickListener(object: CardMemberListAdapter.OnClickListener{
+            adapter.setOnClickListener(object : CardMemberListAdapter.OnClickListener {
                 override fun onClick() {
                     memberListDialog()
                 }
 
             })
-        }else{
+        } else {
             tv_select_members_card_details.visibility = View.VISIBLE
             rv_selected_members_list_id.visibility = View.GONE
         }
-
 
 
     }
