@@ -6,14 +6,14 @@ import android.graphics.Color
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
+import androidx.recyclerview.widget.GridLayoutManager
 import br.com.trelloapp.R
+import br.com.trelloapp.adapter.CardMemberListAdapter
 import br.com.trelloapp.dialog.LabelColorDialog
 import br.com.trelloapp.dialog.MemberListDialog
 import br.com.trelloapp.firebase.FirestoreClass
-import br.com.trelloapp.model.BoardModel
-import br.com.trelloapp.model.CardModel
-import br.com.trelloapp.model.TaskModel
-import br.com.trelloapp.model.UserModel
+import br.com.trelloapp.model.*
 import br.com.trelloapp.utils.Constants.BOARDS_KEY_NAME_COLLECTION
 import br.com.trelloapp.utils.Constants.BOARD_MEMBERS_LIST
 import br.com.trelloapp.utils.Constants.CARD_LIST_ITEM_POSITION
@@ -157,6 +157,51 @@ class CardDetailsActivity : BaseActivity() {
         }
 
         listDialog.show()
+
+
+    }
+
+    private fun seteUpSelectedMembersList() {
+        val cardAssignedMembersList =
+            mBoardModel.taskList[mTaskItemPosition].cards[mCardPosition].assignedTo
+
+        val selectedMembersList: ArrayList<SelectedMembersModel> = ArrayList()
+
+        for (i in mListMembers.indices) {
+            for (j in cardAssignedMembersList) {
+                if (mListMembers[i].id == j) {
+                   val selectedMember  = SelectedMembersModel(
+                       mListMembers[i].id,
+                       mListMembers[i].image
+                   )
+                    selectedMembersList.add(selectedMember)
+                }
+            }
+        }
+
+        if(selectedMembersList.size > 0){
+            selectedMembersList.add(SelectedMembersModel("",""))
+            tv_select_members_card_details.visibility = View.GONE
+            rv_selected_members_list_id.visibility = View.VISIBLE
+
+            rv_selected_members_list_id.layoutManager = GridLayoutManager(this,6)
+            rv_selected_members_list_id.setHasFixedSize(true)
+
+            val adapter = CardMemberListAdapter(this,selectedMembersList)
+
+            rv_selected_members_list_id.adapter = adapter
+
+            adapter.setOnClickListener(object: CardMemberListAdapter.OnClickListener{
+                override fun onClick() {
+                    memberListDialog()
+                }
+
+            })
+        }else{
+            tv_select_members_card_details.visibility = View.VISIBLE
+            rv_selected_members_list_id.visibility = View.GONE
+        }
+
 
 
     }
