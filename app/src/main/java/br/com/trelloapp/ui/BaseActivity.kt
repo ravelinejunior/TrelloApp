@@ -60,7 +60,7 @@ open class BaseActivity : AppCompatActivity() {
         snackbar.show()
     }
 
-    fun showWelcomeSnabar(message: String) {
+    fun showWelcomeSnackBar(message: String) {
         val snackbar =
             Snackbar.make(findViewById(android.R.id.content), message, Snackbar.LENGTH_LONG)
         val snackbarView = snackbar.view
@@ -69,7 +69,7 @@ open class BaseActivity : AppCompatActivity() {
     }
 
     fun getCurrentDate(): String {
-        val simpleDateFormat = SimpleDateFormat("dd/MM/yyyy G 'at' HH:mm:ss z", Locale.getDefault())
+        val simpleDateFormat = SimpleDateFormat("dd/MM/yyyy 'at' HH:mm:ss", Locale.getDefault())
         val currentDateAndTime: String = simpleDateFormat.format(Date())
         return currentDateAndTime
     }

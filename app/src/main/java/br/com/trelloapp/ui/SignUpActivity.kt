@@ -118,7 +118,7 @@ class SignUpActivity : BaseActivity(), View.OnClickListener {
 
     fun userRegisteredSuccess() {
         firebaseInstance.signOut()
-        showWelcomeSnabar("Registered with success!")
+        showWelcomeSnackBar("Registered with success!")
         finish()
     }
 }

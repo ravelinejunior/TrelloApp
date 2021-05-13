@@ -1,12 +1,15 @@
 package br.com.trelloapp.ui
 
 import android.app.AlertDialog
+import android.app.DatePickerDialog
 import android.app.Dialog
 import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.GridLayoutManager
 import br.com.trelloapp.R
 import br.com.trelloapp.adapter.CardMemberListAdapter
@@ -19,7 +22,11 @@ import br.com.trelloapp.utils.Constants.BOARD_MEMBERS_LIST
 import br.com.trelloapp.utils.Constants.CARD_LIST_ITEM_POSITION
 import br.com.trelloapp.utils.Constants.SELECT
 import br.com.trelloapp.utils.Constants.TASK_LIST_ITEM_POSITION
+import br.com.trelloapp.utils.Constants.isNetworkAvailable
 import kotlinx.android.synthetic.main.activity_card_details.*
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.collections.ArrayList
 
 class CardDetailsActivity : BaseActivity() {
 
@@ -28,6 +35,7 @@ class CardDetailsActivity : BaseActivity() {
     private var mCardPosition: Int = -1
     private var mTaskItemPosition: Int = -1
     private lateinit var mListMembers: ArrayList<UserModel>
+    private var mSelectedDueDateMilliSec: Long = 0L
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,14 +48,18 @@ class CardDetailsActivity : BaseActivity() {
             mListMembers = intent.getParcelableArrayListExtra(BOARD_MEMBERS_LIST)!!
         }
         setupActionBar()
-        initFields()
+
 
         btn_update_card_details.setOnClickListener {
-            val name = et_name_card_details.text.toString()
-            if (name.isNotEmpty()) {
-                updateCardDetails()
+            if (isNetworkAvailable(this)) {
+                val name = et_name_card_details.text.toString()
+                if (name.isNotEmpty()) {
+                    updateCardDetails()
+                } else {
+                    showErrorSnackBar("Name can´t be empty!")
+                }
             } else {
-                showErrorSnackBar("Name can´t be empty!")
+                showErrorSnackBar("No Internet Connection")
             }
         }
 
@@ -59,12 +71,20 @@ class CardDetailsActivity : BaseActivity() {
             memberListDialog()
         }
 
+        tv_select_due_date_card_details.setOnClickListener {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                showDataPicker()
+            }
+        }
+
         mSelectedColor = mBoardModel.taskList[mTaskItemPosition].cards[mCardPosition].labelColor
+        mSelectedDueDateMilliSec =
+            mBoardModel.taskList[mTaskItemPosition].cards[mCardPosition].dueDate
 
         if (mSelectedColor.isNotEmpty()) {
             setColor()
         }
-
+        initFields()
         setUpSelectedMembersList()
     }
 
@@ -86,8 +106,13 @@ class CardDetailsActivity : BaseActivity() {
     private fun initFields() {
         et_name_card_details.setText(mBoardModel.taskList[mTaskItemPosition].cards[mCardPosition].name)
         et_name_card_details.setSelection(et_name_card_details.text.toString().length)
-        tv_select_due_date_card_details.text =
-            mBoardModel.taskList[mTaskItemPosition].cards[mCardPosition].createAt
+
+        if (mSelectedDueDateMilliSec > 0L) {
+            val simpleDateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+            val selectedDate = simpleDateFormat.format(mSelectedDueDateMilliSec)
+
+            tv_select_due_date_card_details.text = selectedDate
+        }
     }
 
 
@@ -105,7 +130,8 @@ class CardDetailsActivity : BaseActivity() {
             mBoardModel.taskList[mTaskItemPosition].cards[mCardPosition].createdBy,
             mBoardModel.taskList[mTaskItemPosition].cards[mCardPosition].createAt,
             mBoardModel.taskList[mTaskItemPosition].cards[mCardPosition].assignedTo,
-            mSelectedColor
+            mSelectedColor,
+            mSelectedDueDateMilliSec
 
         )
 
@@ -218,7 +244,7 @@ class CardDetailsActivity : BaseActivity() {
             rv_selected_members_list_id.layoutManager = GridLayoutManager(this, 6)
             rv_selected_members_list_id.setHasFixedSize(true)
 
-            val adapter = CardMemberListAdapter(this, selectedMembersList,true)
+            val adapter = CardMemberListAdapter(this, selectedMembersList, true)
 
             rv_selected_members_list_id.adapter = adapter
 
@@ -233,6 +259,34 @@ class CardDetailsActivity : BaseActivity() {
             rv_selected_members_list_id.visibility = View.GONE
         }
 
+
+    }
+
+    @RequiresApi(Build.VERSION_CODES.N)
+    private fun showDataPicker() {
+        val calendar = Calendar.getInstance(TimeZone.getDefault())
+        val year = calendar.get(Calendar.YEAR)
+        val month = calendar.get(Calendar.MONTH)
+        val day = calendar.get(Calendar.DAY_OF_MONTH)
+
+        val datePickerDialog =
+            DatePickerDialog(
+                this,
+                { _, year, month, dayOfMonth ->
+                    val sDayOfMonth = if (dayOfMonth < 10) "0$dayOfMonth" else "$dayOfMonth"
+                    val sMonthOfYear = if ((month + 1) < 10) "0${month + 1}" else "${month + 1}"
+
+                    val selectedDate = "$sDayOfMonth/$sMonthOfYear/$year"
+                    tv_select_due_date_card_details.text = selectedDate
+
+                    val simpleDateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+                    val finalDate = simpleDateFormat.parse(selectedDate)
+                    mSelectedDueDateMilliSec = finalDate!!.time
+                },
+                year, month, day
+            )
+
+        datePickerDialog.show()
 
     }
 
@@ -276,8 +330,12 @@ class CardDetailsActivity : BaseActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.menu_delete_card_item_id) {
-            alertDialogDeleletedList(mBoardModel.taskList[mTaskItemPosition].cards[mCardPosition].name)
-            return true
+            if (isNetworkAvailable(this)) {
+                alertDialogDeleletedList(mBoardModel.taskList[mTaskItemPosition].cards[mCardPosition].name)
+                return true
+            } else {
+                showErrorSnackBar("No Internet Connection!")
+            }
         }
         return super.onOptionsItemSelected(item)
     }

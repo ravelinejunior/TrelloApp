@@ -49,7 +49,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         if (intent.extras != null) {
             user = intent.getParcelableExtra(USER_KEY_MODEL)
             if (user != null)
-                showWelcomeSnabar("Hello ${user?.name}")
+                showWelcomeSnackBar("Hello ${user?.name}")
         }
 
         FirestoreClass().loadUserData(this)

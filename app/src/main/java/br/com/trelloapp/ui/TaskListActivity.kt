@@ -81,6 +81,8 @@ class TaskListActivity : BaseActivity() {
 
             showProgressDialog(resources.getString(R.string.please_wait))
             FirestoreClass().getBoardDetail(this, mBoardModel.documentId)
+        }else{
+            showErrorSnackBar("No Internet Connection!")
         }
 
     }
@@ -97,6 +99,8 @@ class TaskListActivity : BaseActivity() {
             showProgressDialog(resources.getString(R.string.please_wait))
 
             FirestoreClass().addUpdateTaskList(this, mBoardModel)
+        }else{
+            showErrorSnackBar("No Internet Connection!")
         }
 
     }
@@ -111,6 +115,8 @@ class TaskListActivity : BaseActivity() {
             showProgressDialog(resources.getString(R.string.please_wait))
 
             FirestoreClass().addUpdateTaskList(this, mBoardModel, true)
+        }else{
+            showErrorSnackBar("No Internet Connection!")
         }
 
     }
@@ -124,8 +130,9 @@ class TaskListActivity : BaseActivity() {
 
             hideProgressDialog()
             FirestoreClass().addUpdateTaskList(this, mBoardModel)
-
-
+        }else{
+            hideProgressDialog()
+            showErrorSnackBar("No Internet Connection!")
         }
     }
 
@@ -163,6 +170,8 @@ class TaskListActivity : BaseActivity() {
 
             FirestoreClass().addUpdateTaskList(this, mBoardModel)
 
+        }else{
+            showErrorSnackBar("No Internet Connection!")
         }
     }
 
@@ -194,6 +203,8 @@ class TaskListActivity : BaseActivity() {
             if (isNetworkAvailable(this)) {
                 showProgressDialog(resources.getString(R.string.please_wait))
                 FirestoreClass().getBoardDetail(this, mBoardModel.documentId)
+            }else{
+                showErrorSnackBar("No Internet Connection!")
             }
         } else {
             Log.i("TAGTASKLIST", "nothing changed!")
