@@ -26,7 +26,7 @@ class TaskListActivity : BaseActivity() {
     private lateinit var mBoardModel: BoardModel
     private lateinit var taskAdapter: TaskItemAdapter
     private var cardModelList: ArrayList<CardModel>? = null
-    private lateinit var mAssignedMemberList: ArrayList<UserModel>
+    lateinit var mAssignedMemberList: ArrayList<UserModel>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -67,19 +67,6 @@ class TaskListActivity : BaseActivity() {
         mBoardModel = board
         hideProgressDialog()
 
-        val addTaskList = TaskModel(
-            resources.getString(R.string.add_list)
-        )
-
-        board.taskList.add(addTaskList)
-
-        rv_task_list.layoutManager =
-            LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
-        rv_task_list.setHasFixedSize(true)
-
-        taskAdapter = TaskItemAdapter(this, board.taskList)
-
-        rv_task_list.adapter = taskAdapter
 
         //call the function to get members of a card
         showProgressDialog(resources.getString(R.string.please_wait))
@@ -220,7 +207,7 @@ class TaskListActivity : BaseActivity() {
         intent.putExtra(BOARDS_KEY_NAME_COLLECTION, mBoardModel)
         intent.putExtra(TASK_LIST_ITEM_POSITION, taskListPosition)
         intent.putExtra(CARD_LIST_ITEM_POSITION, cardPosition)
-        intent.putExtra(BOARD_MEMBERS_LIST,mAssignedMemberList)
+        intent.putExtra(BOARD_MEMBERS_LIST, mAssignedMemberList)
 
         startActivityForResult(intent, CARD_DETAILS_REQUEST_CODE)
     }
@@ -229,6 +216,21 @@ class TaskListActivity : BaseActivity() {
         mAssignedMemberList = list
 
         hideProgressDialog()
+
+
+        val addTaskList = TaskModel(
+            resources.getString(R.string.add_list)
+        )
+
+        mBoardModel.taskList.add(addTaskList)
+
+        rv_task_list.layoutManager =
+            LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+        rv_task_list.setHasFixedSize(true)
+
+        taskAdapter = TaskItemAdapter(this, mBoardModel.taskList)
+
+        rv_task_list.adapter = taskAdapter
     }
 
     companion object {

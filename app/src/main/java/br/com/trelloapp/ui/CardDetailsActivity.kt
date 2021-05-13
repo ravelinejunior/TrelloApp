@@ -218,7 +218,7 @@ class CardDetailsActivity : BaseActivity() {
             rv_selected_members_list_id.layoutManager = GridLayoutManager(this, 6)
             rv_selected_members_list_id.setHasFixedSize(true)
 
-            val adapter = CardMemberListAdapter(this, selectedMembersList)
+            val adapter = CardMemberListAdapter(this, selectedMembersList,true)
 
             rv_selected_members_list_id.adapter = adapter
 
