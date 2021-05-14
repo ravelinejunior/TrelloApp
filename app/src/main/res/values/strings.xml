@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">TrelloApp</string>
+    <string name="app_name">OrganizeIt</string>
 
     <string name="image_contentDescription">image</string>
     <string name="let_s_get_started_text">Let´s Get started</string>

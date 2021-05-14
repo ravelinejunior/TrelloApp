@@ -81,7 +81,7 @@ class TaskListActivity : BaseActivity() {
 
             showProgressDialog(resources.getString(R.string.please_wait))
             FirestoreClass().getBoardDetail(this, mBoardModel.documentId)
-        }else{
+        } else {
             showErrorSnackBar("No Internet Connection!")
         }
 
@@ -99,7 +99,7 @@ class TaskListActivity : BaseActivity() {
             showProgressDialog(resources.getString(R.string.please_wait))
 
             FirestoreClass().addUpdateTaskList(this, mBoardModel)
-        }else{
+        } else {
             showErrorSnackBar("No Internet Connection!")
         }
 
@@ -115,7 +115,7 @@ class TaskListActivity : BaseActivity() {
             showProgressDialog(resources.getString(R.string.please_wait))
 
             FirestoreClass().addUpdateTaskList(this, mBoardModel, true)
-        }else{
+        } else {
             showErrorSnackBar("No Internet Connection!")
         }
 
@@ -130,7 +130,7 @@ class TaskListActivity : BaseActivity() {
 
             hideProgressDialog()
             FirestoreClass().addUpdateTaskList(this, mBoardModel)
-        }else{
+        } else {
             hideProgressDialog()
             showErrorSnackBar("No Internet Connection!")
         }
@@ -170,7 +170,7 @@ class TaskListActivity : BaseActivity() {
 
             FirestoreClass().addUpdateTaskList(this, mBoardModel)
 
-        }else{
+        } else {
             showErrorSnackBar("No Internet Connection!")
         }
     }
@@ -203,7 +203,7 @@ class TaskListActivity : BaseActivity() {
             if (isNetworkAvailable(this)) {
                 showProgressDialog(resources.getString(R.string.please_wait))
                 FirestoreClass().getBoardDetail(this, mBoardModel.documentId)
-            }else{
+            } else {
                 showErrorSnackBar("No Internet Connection!")
             }
         } else {
@@ -242,6 +242,15 @@ class TaskListActivity : BaseActivity() {
         taskAdapter = TaskItemAdapter(this, mBoardModel.taskList)
 
         rv_task_list.adapter = taskAdapter
+    }
+
+    fun updateCardsTaskList(taskListPosition: Int, cards: ArrayList<CardModel>) {
+        mBoardModel.taskList.removeAt(mBoardModel.taskList.size - 1)
+
+        mBoardModel.taskList[taskListPosition].cards = cards
+
+        showProgressDialog(resources.getString(R.string.please_wait))
+        FirestoreClass().addUpdateTaskList(this, mBoardModel)
     }
 
     companion object {

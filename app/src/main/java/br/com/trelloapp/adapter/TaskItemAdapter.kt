@@ -9,6 +9,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.Toast
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import br.com.trelloapp.R
@@ -16,9 +18,13 @@ import br.com.trelloapp.model.CardModel
 import br.com.trelloapp.model.TaskModel
 import br.com.trelloapp.ui.TaskListActivity
 import kotlinx.android.synthetic.main.item_task_adapter.view.*
+import java.util.*
 
 class TaskItemAdapter(private val context: Context, private var listTask: ArrayList<TaskModel>) :
     RecyclerView.Adapter<TaskItemAdapter.MyViewHolder>() {
+
+    private var mPositionDraggedFrom = -1
+    private var mPositionDraggedTo = -1
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         val view: View =
@@ -138,14 +144,76 @@ class TaskItemAdapter(private val context: Context, private var listTask: ArrayL
         holder.itemView.rv_item_card_list.adapter = adapter
 
         //card list with details
-        adapter.setOnClickListener(object :CardListItemsAdapter.OnClickListener{
+        adapter.setOnClickListener(object : CardListItemsAdapter.OnClickListener {
             override fun onClick(cardPosition: Int, card: CardModel) {
-                if(context is TaskListActivity){
-                    context.cardDetails(position,cardPosition)
+                if (context is TaskListActivity) {
+                    context.cardDetails(position, cardPosition)
                 }
             }
 
         })
+
+        //creating the drag and drop function
+        val dividerItemDecoration = DividerItemDecoration(context, DividerItemDecoration.VERTICAL)
+
+        holder.itemView.rv_item_card_list.addItemDecoration(dividerItemDecoration)
+
+        val helper = ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(
+            ItemTouchHelper.UP or ItemTouchHelper.DOWN, 0
+        ) {
+            override fun onMove(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
+            ): Boolean {
+
+                //get the dragged position
+                val draggedPosition = viewHolder.adapterPosition
+                val targetPosition = target.adapterPosition
+
+                if (mPositionDraggedFrom == -1) {
+                    mPositionDraggedFrom = draggedPosition
+                }
+
+                mPositionDraggedTo = targetPosition
+
+                Collections.swap(listTask[position].cards, draggedPosition, targetPosition)
+                adapter.notifyItemMoved(draggedPosition, targetPosition)
+
+                return false
+            }
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+
+            }
+
+
+            //call it when user stops to drag and drop and then save the thing
+            override fun clearView(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder
+            ) {
+                super.clearView(recyclerView, viewHolder)
+
+                if (mPositionDraggedFrom != -1 &&
+                    mPositionDraggedTo != -1 &&
+                    mPositionDraggedFrom != mPositionDraggedTo
+                ) {
+                    (context as TaskListActivity).updateCardsTaskList(
+                        position,
+                        listTask[position].cards
+                    )
+
+                    //reset the position
+                    mPositionDraggedFrom = -1
+                    mPositionDraggedTo = -1
+                }
+            }
+        }
+        )
+
+        //call the helper
+        helper.attachToRecyclerView(holder.itemView.rv_item_card_list)
     }
 
     private fun Int.toDP(): Int = (this / Resources.getSystem().displayMetrics.density).toInt()
