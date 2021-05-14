@@ -55,4 +55,7 @@
 
     <string name="str_select_member">Select Member</string>
 
+    <string name="default_notification_channel_id" translatable="true">organize_it_fcm_default_channel</string>
+    <string name="msg_token_fmt">msg_token_fmt</string>
+
 </resources>

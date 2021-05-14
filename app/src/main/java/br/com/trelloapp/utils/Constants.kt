@@ -74,4 +74,9 @@ object Constants {
     const val SELECT = "select"
     const val UNSELECT = "unSelect"
 
+    //Message
+    const val ORGANIZE_IT_PREFERENCE = "OrganizePreferences"
+    const val FCM_TOKEN_UPDATED = "FCM_TOKEN_UPDATED"
+    const val FCM_TOKEN = "fcmToken"
+
 }

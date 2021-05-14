@@ -3,6 +3,7 @@ package br.com.trelloapp.ui
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
@@ -16,11 +17,15 @@ import br.com.trelloapp.model.BoardModel
 import br.com.trelloapp.model.UserModel
 import br.com.trelloapp.utils.Constants.BOARDS_KEY_NAME_COLLECTION
 import br.com.trelloapp.utils.Constants.BOARD_MODEL_ID
+import br.com.trelloapp.utils.Constants.FCM_TOKEN
+import br.com.trelloapp.utils.Constants.FCM_TOKEN_UPDATED
 import br.com.trelloapp.utils.Constants.NAME_USER_KEY
+import br.com.trelloapp.utils.Constants.ORGANIZE_IT_PREFERENCE
 import br.com.trelloapp.utils.Constants.USER_KEY_MODEL
 import com.bumptech.glide.Glide
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.iid.FirebaseInstanceId
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 import kotlinx.android.synthetic.main.content_main.*
@@ -41,6 +46,8 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
     private lateinit var boardItemsAdapter: BoardItemsAdapter
 
+    private lateinit var mSharedPreferences: SharedPreferences
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -52,7 +59,25 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                 showWelcomeSnackBar("Hello ${user?.name}")
         }
 
-        FirestoreClass().loadUserData(this)
+        mSharedPreferences = this.getSharedPreferences(ORGANIZE_IT_PREFERENCE, MODE_PRIVATE)
+
+        //initialize token
+        val tokenUpdated = mSharedPreferences.getBoolean(FCM_TOKEN_UPDATED, false)
+
+        if (tokenUpdated) {
+            showProgressDialog(resources.getString(R.string.please_wait))
+            FirestoreClass().loadUserData(this)
+            hideProgressDialog()
+        } else {
+            showProgressDialog(resources.getString(R.string.please_wait))
+            FirebaseInstanceId.getInstance().instanceId.addOnSuccessListener(this@MainActivity) {
+                updateToken(it.token)
+            }
+            FirestoreClass().loadUserData(this)
+            hideProgressDialog()
+        }
+
+
 
         nav_view_id.setNavigationItemSelectedListener(this)
 
@@ -63,6 +88,8 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
             startActivityForResult(intent, CREATE_BOARD_REQUEST_CODE)
         }
+
+
     }
 
 
@@ -131,6 +158,9 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
     private fun signOutUser() {
         firebaseAuth.signOut()
+
+        mSharedPreferences.edit().clear().apply()
+
         val intent = Intent(this, IntroActivity::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
         startActivity(intent)
@@ -166,12 +196,12 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             rv_content_boards_list.adapter = boardItemsAdapter
 
 
-            boardItemsAdapter.setOnClickListener(object: BoardItemsAdapter.OnClickListener{
+            boardItemsAdapter.setOnClickListener(object : BoardItemsAdapter.OnClickListener {
                 override fun onClick(position: Int, model: BoardModel) {
 
-                    val intent = Intent(this@MainActivity,TaskListActivity::class.java)
-                    intent.putExtra(BOARDS_KEY_NAME_COLLECTION,model)
-                    intent.putExtra(BOARD_MODEL_ID,model.documentId)
+                    val intent = Intent(this@MainActivity, TaskListActivity::class.java)
+                    intent.putExtra(BOARDS_KEY_NAME_COLLECTION, model)
+                    intent.putExtra(BOARD_MODEL_ID, model.documentId)
                     startActivity(intent)
                 }
 
@@ -183,6 +213,27 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             tv_content_no_boards_available.visibility = View.VISIBLE
 
         }
+    }
+
+    fun tokenUpdateSuccess() {
+
+        val editor: SharedPreferences.Editor = mSharedPreferences.edit()
+        editor.putBoolean(FCM_TOKEN_UPDATED, true)
+        editor.apply()
+        showProgressDialog(resources.getString(R.string.please_wait))
+        FirestoreClass().loadUserData(this, true)
+        hideProgressDialog()
+    }
+
+    private fun updateToken(token: String) {
+        val userHashMap = HashMap<String, Any>()
+        userHashMap[FCM_TOKEN] = token
+
+        showProgressDialog(resources.getString(R.string.please_wait))
+        FirestoreClass().updateUserProfileData(this, userHashMap)
+        hideProgressDialog()
+
+
     }
 
 
