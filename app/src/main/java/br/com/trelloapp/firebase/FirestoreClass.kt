@@ -179,7 +179,7 @@ class FirestoreClass {
             .document(getCurrentUserId())
             .update(userHashMap).addOnSuccessListener {
                 Log.i("TAGTaskSnapshot", "updateUserProfileData: Success updating user")
-                Toast.makeText(activity, "Updated with success!", Toast.LENGTH_SHORT).show()
+                //Toast.makeText(activity, "Updated with success!", Toast.LENGTH_SHORT).show()
 
                 when (activity) {
                     is MainActivity -> {

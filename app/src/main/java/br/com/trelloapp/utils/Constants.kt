@@ -79,4 +79,16 @@ object Constants {
     const val FCM_TOKEN_UPDATED = "FCM_TOKEN_UPDATED"
     const val FCM_TOKEN = "fcmToken"
 
+    //FCM notification
+    const val FCM_BASE_URL = "https://fcm.googleapis.com/fcm/send"
+    const val FCM_AUTHORIZATION = "authorization"
+    const val FCM_KEY = "key"
+    const val FCM_SERVER_KEY =
+        "AAAAhQ3s8Ng:APA91bHvyYTVXZ4d84M_JiMefMMfUcZkH0xt_iBnJiOkaeLSaj88-RCnLq759cke39Gc3-sdH3PerAs6I6XXJWQKJzcQxo0BesDJ6_Ar7LKg9WwhUNWHVkYYXvx2-EJX3oc8pSMgEraj"
+    const val FCM_KEY_TITLE = "title"
+    const val FCM_KEY_MESSAGE = "message"
+    const val FCM_KEY_DATA = "data"
+    const val FCM_KEY_TO = "to"
+
+
 }
