@@ -24,12 +24,20 @@ open class BaseActivity : AppCompatActivity() {
         setContentView(R.layout.activity_base)
     }
 
-    fun showProgressDialog(text: String) {
+    fun showProgressDialog(text: String, time: Int? = 1500) {
         mProgressDialog = Dialog(this)
         mProgressDialog.setContentView(R.layout.dialog_progress)
         mProgressDialog.tv_progress_text.text = text
-        mProgressDialog.setCancelable(false)
+        mProgressDialog.setCancelable(true)
         mProgressDialog.show()
+
+        if (time != 1500) {
+            Handler().postDelayed(
+                {
+                    hideProgressDialog()
+                }, 2000
+            )
+        }
     }
 
     fun hideProgressDialog() {

@@ -57,5 +57,6 @@
 
     <string name="default_notification_channel_id" translatable="true">organize_it_fcm_default_channel</string>
     <string name="msg_token_fmt">msg_token_fmt</string>
+    <string name="click_to_edit">Click here to edit image</string>
 
 </resources>

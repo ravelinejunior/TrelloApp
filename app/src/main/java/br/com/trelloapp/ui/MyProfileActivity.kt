@@ -6,10 +6,8 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
-import android.provider.MediaStore
 import android.util.Log
 import android.view.View
-import android.webkit.MimeTypeMap
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -26,7 +24,6 @@ import br.com.trelloapp.utils.Constants.getFileExtension
 import br.com.trelloapp.utils.Constants.isNetworkAvailable
 import br.com.trelloapp.utils.Constants.showImageChooser
 import com.bumptech.glide.Glide
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import kotlinx.android.synthetic.main.activity_my_profile.*
@@ -61,6 +58,7 @@ class MyProfileActivity : BaseActivity(), View.OnClickListener {
 
         iv_user_image_myProfile.setOnClickListener(this)
         btn_update_myProfile.setOnClickListener(this)
+        tv_click_me_editPhoto_myProfile.setOnClickListener(this)
     }
 
     private fun setupActionBar() {
@@ -117,6 +115,24 @@ class MyProfileActivity : BaseActivity(), View.OnClickListener {
                 }
             }
 
+            R.id.tv_click_me_editPhoto_myProfile -> {
+                if (ContextCompat.checkSelfPermission(
+                        this,
+                        Manifest.permission.READ_EXTERNAL_STORAGE
+                    ) == PackageManager.PERMISSION_GRANTED
+                ) {
+                    showImageChooser(this)
+                } else {
+
+                    //required the permissions
+                    ActivityCompat.requestPermissions(
+                        this,
+                        arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
+                        READ_STORAGE_PERMISSION_CODE
+                    )
+                }
+            }
+
             R.id.btn_update_myProfile -> {
 
                 if (isNetworkAvailable(this)) {
@@ -131,6 +147,7 @@ class MyProfileActivity : BaseActivity(), View.OnClickListener {
                     }
                 } else {
                     showErrorSnackBar("No Internet Connection!")
+                    hideProgressDialog()
                 }
 
             }
@@ -164,7 +181,7 @@ class MyProfileActivity : BaseActivity(), View.OnClickListener {
 
             } else {
                 showErrorSnackBar("None changes has been detected!")
-                hideProgressDialog()
+
             }
 
         }
@@ -186,7 +203,6 @@ class MyProfileActivity : BaseActivity(), View.OnClickListener {
             }
         }
     }
-
 
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -216,8 +232,8 @@ class MyProfileActivity : BaseActivity(), View.OnClickListener {
         if (mSelectedImageFileUri != null) {
             //storage file
             storageRef = storageRef.child(user!!.id).child(
-                IMAGE_REFERENCE_DOCUMENT  + "." +
-                        getFileExtension(mSelectedImageFileUri,this)
+                IMAGE_REFERENCE_DOCUMENT + "." +
+                        getFileExtension(mSelectedImageFileUri, this)
             )
 
             storageRef.putFile(mSelectedImageFileUri!!).addOnSuccessListener { taskSnapshot ->
@@ -225,6 +241,8 @@ class MyProfileActivity : BaseActivity(), View.OnClickListener {
                     "TAGTaskSnapshot",
                     "Image Url ${taskSnapshot.metadata!!.reference!!.downloadUrl}"
                 )
+
+                hideProgressDialog()
 
                 taskSnapshot.metadata!!.reference!!.downloadUrl.addOnSuccessListener { uri ->
                     mProfileImageUrl = uri.toString()
@@ -234,12 +252,8 @@ class MyProfileActivity : BaseActivity(), View.OnClickListener {
                         et_mobile_myProfile.text.toString().toLong()
                     )
 
-                    hideProgressDialog()
-
-
                 }.addOnFailureListener { exception ->
                     Toast.makeText(this, exception.message, Toast.LENGTH_SHORT).show()
-                    hideProgressDialog()
                 }
             }
 
@@ -247,7 +261,6 @@ class MyProfileActivity : BaseActivity(), View.OnClickListener {
             hideProgressDialog()
         }
     }
-
 
 
 }

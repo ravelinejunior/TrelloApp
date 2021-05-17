@@ -49,7 +49,18 @@
                     android:layout_width="@dimen/my_profile_user_image_size"
                     android:layout_height="@dimen/my_profile_user_image_size"
                     android:contentDescription="@string/image_contentDescription"
+                    app:civ_circle_background_color="@color/primary_text_color"
                     android:src="@drawable/ic_user_place_holder" />
+
+                <TextView
+                    android:id="@+id/tv_click_me_editPhoto_myProfile"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textAlignment="center"
+                    android:padding="8dp"
+                    android:layout_marginTop="4dp"
+                    android:text="@string/click_to_edit"
+                    />
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"

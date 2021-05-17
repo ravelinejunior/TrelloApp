@@ -7,7 +7,13 @@
     android:layout_height="wrap_content"
     android:elevation="@dimen/task_item_cv_elevation"
     android:orientation="vertical">
+<ScrollView
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:fillViewport="true"
 
+
+    >
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -239,4 +245,7 @@
                 tools:visibility="visible" />
         </LinearLayout>
     </LinearLayout>
+
+
+</ScrollView>
 </androidx.cardview.widget.CardView>

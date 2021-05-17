@@ -65,11 +65,11 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         val tokenUpdated = mSharedPreferences.getBoolean(FCM_TOKEN_UPDATED, false)
 
         if (tokenUpdated) {
-            showProgressDialog(resources.getString(R.string.please_wait))
+            showProgressDialog(resources.getString(R.string.please_wait),1)
             FirestoreClass().loadUserData(this)
             hideProgressDialog()
         } else {
-            showProgressDialog(resources.getString(R.string.please_wait))
+            showProgressDialog(resources.getString(R.string.please_wait),1)
             FirebaseInstanceId.getInstance().instanceId.addOnSuccessListener(this@MainActivity) {
                 updateToken(it.token)
             }
@@ -229,7 +229,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         val userHashMap = HashMap<String, Any>()
         userHashMap[FCM_TOKEN] = token
 
-        showProgressDialog(resources.getString(R.string.please_wait))
+        showProgressDialog(resources.getString(R.string.please_wait),1)
         FirestoreClass().updateUserProfileData(this, userHashMap)
         hideProgressDialog()
 

@@ -66,8 +66,6 @@ class TaskListActivity : BaseActivity() {
     fun boardDetails(board: BoardModel) {
         mBoardModel = board
         hideProgressDialog()
-
-
         //call the function to get members of a card
         showProgressDialog(resources.getString(R.string.please_wait))
         FirestoreClass().getAssignedMembersDetails(this, mBoardModel.assignedTo)
