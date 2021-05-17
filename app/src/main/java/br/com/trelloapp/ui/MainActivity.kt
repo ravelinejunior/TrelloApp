@@ -2,6 +2,8 @@ package br.com.trelloapp.ui
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.app.AlertDialog
+import android.app.Dialog
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
@@ -65,11 +67,11 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         val tokenUpdated = mSharedPreferences.getBoolean(FCM_TOKEN_UPDATED, false)
 
         if (tokenUpdated) {
-            showProgressDialog(resources.getString(R.string.please_wait),1)
+            showProgressDialog(resources.getString(R.string.please_wait), 1)
             FirestoreClass().loadUserData(this)
             hideProgressDialog()
         } else {
-            showProgressDialog(resources.getString(R.string.please_wait),1)
+            showProgressDialog(resources.getString(R.string.please_wait), 1)
             FirebaseInstanceId.getInstance().instanceId.addOnSuccessListener(this@MainActivity) {
                 updateToken(it.token)
             }
@@ -207,6 +209,16 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
             })
 
+            boardItemsAdapter.setOnLongClickListener(object :
+                BoardItemsAdapter.OnLongClickListener {
+                override fun onLongClickListener(position: Int, model: BoardModel) {
+
+                    alertDialogDeleletedList(model.name, model)
+
+                }
+
+            })
+
 
         } else {
             rv_content_boards_list.visibility = View.GONE
@@ -229,11 +241,31 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         val userHashMap = HashMap<String, Any>()
         userHashMap[FCM_TOKEN] = token
 
-        showProgressDialog(resources.getString(R.string.please_wait),1)
+        showProgressDialog(resources.getString(R.string.please_wait), 1)
         FirestoreClass().updateUserProfileData(this, userHashMap)
         hideProgressDialog()
 
 
+    }
+
+    private fun alertDialogDeleletedList(title: String, boardModel: BoardModel) {
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("Alert")
+        builder.setMessage("Are you sure you want to delete $title?")
+        builder.setIcon(android.R.drawable.ic_dialog_alert)
+        builder.setPositiveButton("Yes") { dialog, _ ->
+
+            FirestoreClass().deleteBoard(this@MainActivity, boardModel)
+            dialog.dismiss()
+
+        }
+        builder.setNegativeButton("No") { dialogInterface, _ ->
+            dialogInterface.dismiss()
+        }
+
+        val dialog: Dialog = builder.create()
+        dialog.setCancelable(false)
+        dialog.show()
     }
 
 

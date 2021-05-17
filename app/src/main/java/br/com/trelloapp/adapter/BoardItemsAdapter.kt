@@ -18,6 +18,7 @@ open class BoardItemsAdapter(
     RecyclerView.Adapter<BoardItemsAdapter.MyViewHolder>() {
 
     private var onClickListener: OnClickListener? = null
+    private var onLongClickListener: OnLongClickListener? = null
 
 
     open class MyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -51,6 +52,15 @@ open class BoardItemsAdapter(
                 onClickListener?.onClick(position, board)
             }
         }
+
+        holder.itemView.setOnLongClickListener {
+            if (onLongClickListener != null) {
+                onLongClickListener?.onLongClickListener(position, board)
+            }
+            true
+        }
+
+
     }
 
     override fun getItemId(position: Int): Long {
@@ -65,7 +75,18 @@ open class BoardItemsAdapter(
         this.onClickListener = onClickListener
     }
 
+    fun setOnLongClickListener(onLongClickListener: OnLongClickListener):Boolean {
+        this.onLongClickListener = onLongClickListener
+        return true
+    }
+
     interface OnClickListener {
         fun onClick(position: Int, model: BoardModel)
     }
+
+    interface OnLongClickListener {
+        fun onLongClickListener(position: Int, model: BoardModel)
+    }
+
 }
+

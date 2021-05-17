@@ -174,6 +174,23 @@ class FirestoreClass {
         }
     }
 
+    fun deleteBoard(activity: MainActivity,board: BoardModel){
+        mFirestore.collection(BOARDS_KEY_NAME_COLLECTION)
+            .document(board.documentId)
+            .delete().addOnSuccessListener {
+                Log.i("TAGTaskSnapshot", "Board: Success board deleted")
+                Toast.makeText(activity, "Board deleted successfully!", Toast.LENGTH_SHORT)
+                    .show()
+                loadBoardFromServer(activity)
+
+            }.addOnFailureListener {
+                exception ->
+                Toast.makeText(activity, exception.message, Toast.LENGTH_SHORT).show()
+                activity.hideProgressDialog()
+            }
+
+    }
+
     fun updateUserProfileData(activity: Activity, userHashMap: HashMap<String, Any>) {
         mFirestore.collection(USER_COLLECTION_NAME)
             .document(getCurrentUserId())
