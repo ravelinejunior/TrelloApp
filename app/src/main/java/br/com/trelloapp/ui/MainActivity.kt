@@ -74,6 +74,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             showProgressDialog(resources.getString(R.string.please_wait), 1)
             FirebaseInstanceId.getInstance().instanceId.addOnSuccessListener(this@MainActivity) {
                 updateToken(it.token)
+                hideProgressDialog()
             }
             FirestoreClass().loadUserData(this)
             hideProgressDialog()
@@ -213,7 +214,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                 BoardItemsAdapter.OnLongClickListener {
                 override fun onLongClickListener(position: Int, model: BoardModel) {
 
-                    alertDialogDeleletedList(model.name, model)
+                    alertDialogDeletedList(model.name, model)
 
                 }
 
@@ -232,7 +233,6 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         val editor: SharedPreferences.Editor = mSharedPreferences.edit()
         editor.putBoolean(FCM_TOKEN_UPDATED, true)
         editor.apply()
-        showProgressDialog(resources.getString(R.string.please_wait))
         FirestoreClass().loadUserData(this, true)
         hideProgressDialog()
     }
@@ -240,15 +240,13 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     private fun updateToken(token: String) {
         val userHashMap = HashMap<String, Any>()
         userHashMap[FCM_TOKEN] = token
-
-        showProgressDialog(resources.getString(R.string.please_wait), 1)
         FirestoreClass().updateUserProfileData(this, userHashMap)
         hideProgressDialog()
 
 
     }
 
-    private fun alertDialogDeleletedList(title: String, boardModel: BoardModel) {
+    private fun alertDialogDeletedList(title: String, boardModel: BoardModel) {
         val builder = AlertDialog.Builder(this)
         builder.setTitle("Alert")
         builder.setMessage("Are you sure you want to delete $title?")

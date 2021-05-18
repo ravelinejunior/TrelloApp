@@ -201,6 +201,7 @@ class FirestoreClass {
                 when (activity) {
                     is MainActivity -> {
                         activity.tokenUpdateSuccess()
+                        activity.hideProgressDialog()
                     }
                     is MyProfileActivity -> {
                         activity.hideProgressDialog()

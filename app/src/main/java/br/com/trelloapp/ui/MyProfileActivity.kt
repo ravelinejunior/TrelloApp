@@ -186,6 +186,8 @@ class MyProfileActivity : BaseActivity(), View.OnClickListener {
 
         }
 
+        hideProgressDialog()
+
     }
 
     override fun onRequestPermissionsResult(
